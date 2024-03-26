@@ -27,7 +27,7 @@ class Profile extends StatelessWidget {
             itemBuilder: (context) {
               return [
                 PopupMenuItem(
-                  child: Text("Edit"),
+                  child: Text("Edits"),
                   onTap: () {
                     Get.to(() => AddInfo(),
                         arguments: {"photo": controller.photo});
