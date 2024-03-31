@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:dating_app/controller/signup_controller.dart';
+import 'package:dating_app/view/home/pages/image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +15,7 @@ class Signup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+
       body: Container(
         child: Form(
           key: controller.globalKey,
@@ -29,7 +30,8 @@ class Signup extends StatelessWidget {
                   child: Text(
                     "Sign up with Email",
                     style: TextStyle(
-                      fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
+                      fontSize:
+                          Theme.of(context).textTheme.headlineSmall?.fontSize,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -47,7 +49,8 @@ class Signup extends StatelessWidget {
                   child: Text(
                     "Your Name",
                     style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.bodyMedium?.fontSize,
                         color: Theme.of(context).textTheme.bodyMedium?.color),
                   ),
                 ),
@@ -83,7 +86,8 @@ class Signup extends StatelessWidget {
                   child: Text(
                     "Your email",
                     style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.bodyMedium?.fontSize,
                         color: Theme.of(context).textTheme.bodyMedium?.color),
                   ),
                 ),
@@ -124,7 +128,8 @@ class Signup extends StatelessWidget {
                   child: Text(
                     "Phone",
                     style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.bodyMedium?.fontSize,
                         color: Theme.of(context).textTheme.bodyMedium?.color),
                   ),
                 ),
@@ -155,13 +160,13 @@ class Signup extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 Align(
                   alignment: Alignment(-0.8, 0),
                   child: Text(
                     "Password",
                     style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.bodyMedium?.fontSize,
                         color: Theme.of(context).textTheme.bodyMedium?.color),
                   ),
                 ),
@@ -201,7 +206,8 @@ class Signup extends StatelessWidget {
                   child: Text(
                     "confirm password ",
                     style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.bodyMedium?.fontSize,
                         color: Theme.of(context).textTheme.bodyMedium?.color),
                   ),
                 ),
@@ -271,12 +277,11 @@ class Signup extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
+
                     controller.goto();
-
-
                   },
                   child: Text(
-                    "Create  an account",
+                    "Create account ",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_print
 
+import 'package:dating_app/main.dart';
 import 'package:dating_app/model/singleton_class/addUser_class.dart';
 import 'package:dating_app/view/home/home.dart';
 import 'package:dating_app/view/login/forgetpassword.dart';
@@ -7,6 +8,7 @@ import 'package:dating_app/view/login/login1.dart';
 import 'package:dating_app/view/login/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -16,23 +18,23 @@ class LoginController extends GetxController {
   GlobalKey<FormState> gKey = GlobalKey<FormState>();
 
   void goto() {
-    Get.to(()=>Login1());
+    Get.to(() => Login1());
   }
 
   void goMail() {
-    Get.to(()=>Signup());
+    Get.to(() => Signup());
   }
 
   void goLogin() {
     if (gKey.currentState?.validate() ?? false) {
-      Get.to(()=>Home());
+      Get.to(() => Home());
     }
     mail.clear();
     password.clear();
   }
 
   void goPassword() {
-    Get.to(()=>ForgetPassword());
+    Get.to(() => ForgetPassword());
   }
 
   void googleSignIn() async {
@@ -40,12 +42,10 @@ class LoginController extends GetxController {
     if (user != null) {
       Get.showSnackbar(GetSnackBar(
         title: "Login",
-        backgroundColor: Colors.red,
-        duration: Duration(seconds: 2),
-        message: "User Already Login",
+        backgroundColor: Colors.green,
+        duration: Duration(microseconds: 500),
+        message: "All Ready Exist",
       ));
-
-      Get.to(()=>Home());
     } else {
       var google = await GoogleSignIn().signIn();
 
@@ -58,15 +58,14 @@ class LoginController extends GetxController {
       print("$credential");
       User? userData = data.user;
       AddUserModel().addUser(userData);
-      // GoogleSignIn().signOut();
-      // FirebaseAuth.instance.signOut();
+
       Get.showSnackbar(GetSnackBar(
         title: "Login",
         backgroundColor: Colors.green,
         duration: Duration(microseconds: 500),
         message: "User Added Successfully",
       ));
-      Get.to(()=>Home());
+      Get.to(() => Home());
     }
   }
 }

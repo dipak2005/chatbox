@@ -1,15 +1,22 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/model/userchat_model.dart';
+import 'package:dating_app/view/home/docs/content.dart';
 import 'package:dating_app/view/home/pages/message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:dating_app/controller/chat_controller.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../main.dart';
+import '../../../model/login&signp.dart';
 
 class ChatRoom extends StatelessWidget {
   final ChatController controller = Get.put(ChatController());
@@ -20,21 +27,51 @@ class ChatRoom extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Container(
-          height: 50,
-          width: 50,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
-          child: (controller.photo != null)
-              ? Image.network(controller.photo ?? "")
-              : Image.asset("assets/profile.png"),
+        leading: Stack(
+          children: [
+            Container(
+              height: 50,
+              width: 50,
+              clipBehavior: Clip.antiAlias,
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(30)),
+              child: CircleAvatar(
+                child: ((controller.photo ?? "").startsWith("https://")
+                    ? Image.network(
+                        (controller.photo ?? ""),
+                        fit: BoxFit.cover,
+                      )
+                    : Image.memory(base64Decode(controller.photo ?? ""),
+                        fit: BoxFit.cover)),
+              ),
+            ),
+            Positioned(
+                bottom: 11,
+                right: 10,
+                child: CircleAvatar(
+                  backgroundColor: Colors.lightGreen,
+                  radius: 5,
+                ))
+          ],
         ),
         title: ListTile(
-          title: Text(controller.email ?? "",
+          title: Text(controller.username ?? "",
               style: TextStyle(
                 overflow: TextOverflow.ellipsis,
               ),
               maxLines: 1),
+          subtitle: StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("user")
+                  .doc(controller.id ?? "")
+                  .snapshots(),
+              builder: (context, snapshot) {
+                var status = snapshot.data?.data() as Map<String, dynamic>?;
+                return Text(
+                  "${status?["status"]}",
+                  style: TextStyle(fontSize: 12),
+                );
+              }),
         ),
         actions: [
           IconButton(
@@ -43,7 +80,7 @@ class ChatRoom extends StatelessWidget {
           ),
           IconButton(
             onPressed: () {
-             var phone= Uri.parse(" +91${controller.phone}");
+              var phone = Uri.parse("whatsapp: +91${controller.phone}");
               launchUrl(phone);
               print("object");
             },
@@ -60,6 +97,10 @@ class ChatRoom extends StatelessWidget {
         width: MediaQuery.sizeOf(context).width,
         child: Column(
           children: [
+            // Text(
+            //   controller.chatRoomId.value,
+            //   style: TextStyle(fontSize: 20),
+            // ),
             Expanded(
               child: Obx(
                 () => StreamBuilder<QuerySnapshot>(
@@ -67,95 +108,97 @@ class ChatRoom extends StatelessWidget {
                         .collection("chats")
                         .doc(controller.chatRoomId.value)
                         .collection("messages")
-                        .orderBy("time", descending: false)
                         .snapshots(),
                     builder: (context, snapshot) {
+                      print(controller.chatRoomId.value);
                       List<QueryDocumentSnapshot> data =
                           snapshot.data?.docs ?? [];
-                      if (snapshot.hasError) {
-                        return Text("Error :${snapshot.error}");
-                      }
 
-                      switch (snapshot.connectionState) {
-                        case ConnectionState.waiting:
-                          return Center(child: CircularProgressIndicator());
-                        default:
-                          return ListView.builder(
-                            controller: ScrollController(),
-                            itemCount: data.length,
-                            itemBuilder: (context, index) {
-                              var messageList = data[index];
-                              var message =
-                                  messageList.data() as Map<String, dynamic>;
+                      return ListView.builder(
+                        controller: ScrollController(),
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          var messageList = data[index];
+                          var message =
+                              messageList.data() as Map<String, dynamic>;
 
-                              bool isLogUser =
-                                  controller.senderId == message["senderId"];
+                          bool isLogUser =
+                              controller.senderId == message["senderId"];
+                          Timestamp now = message["time"] ?? "";
+                          DateTime currentTime = now.toDate();
+                          var userTime =
+                              DateFormat("hh:mm a").format(currentTime);
 
-                              return Align(
-                                alignment: isLogUser
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(
+                          // show datetime badge:
+                          // controller.isToday= now.difference(now).inDays==0;
+                          // controller.isYesterday= now.difference(now).inDays==1;
+
+                          return Align(
+                            alignment: isLogUser
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Column(
+                              children: [
+                                // Text(controller.messageDateTile("${message["time"]}" as DateTime)),
+                                //  (index==0 || (index>0 && !controller.isSameDate("${message["time"]}" as DateTime, "${message["time"]}" as DateTime)))?
+
+                                Container(
+                                  padding: EdgeInsets.all(
+                                      MediaQuery.sizeOf(context).width * 0.03),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal:
                                           MediaQuery.sizeOf(context).width *
-                                              0.05),
-                                      margin: EdgeInsets.symmetric(
-                                          horizontal:
-                                              MediaQuery.sizeOf(context).width *
-                                                  0.04,
-                                          vertical: MediaQuery.sizeOf(context)
-                                                  .height *
+                                              0.04,
+                                      vertical:
+                                          MediaQuery.sizeOf(context).height *
                                               0.01),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                            color: (isLogUser)
-                                                ? Colors.green
-                                                : Colors.blue),
-                                        borderRadius: BorderRadius.only(
-                                          bottomRight: Radius.circular(
-                                              (!isLogUser) ? 20 : 0),
-                                          topRight: Radius.circular(20),
-                                          topLeft: Radius.circular(
-                                              (isLogUser) ? 20 : 0),
-                                          bottomLeft: Radius.circular(20),
-                                        ),
-                                      ),
-                                      child: InkWell(
-                                        onTap: () async {
-                                          var future = await FirebaseFirestore
-                                              .instance
-                                              .collection("chat")
-                                              .doc(controller.chatRoomId.value)
-                                              .collection("messages")
-                                              .get();
+                                  decoration: BoxDecoration(
+                                    color: (isLogUser)
+                                        ? Colors.green.shade200
+                                        : Colors.blue.shade100,
+                                    borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(
+                                          (!isLogUser) ? 15 : 0),
+                                      topRight: Radius.circular(15),
+                                      topLeft:
+                                          Radius.circular((isLogUser) ? 15 : 0),
+                                      bottomLeft: Radius.circular(15),
+                                    ),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      var future = await FirebaseFirestore
+                                          .instance
+                                          .collection("chat")
+                                          .doc(controller.chatRoomId.value)
+                                          .collection("messages")
+                                          .get();
+                                    },
+                                    child: Text(
+                                      message["message"],
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 14),
+                                    ),
+                                  ),
+                                ),
+                                // :SizedBox.shrink()
 
-                                          print(
-                                              "${message["message"]}   ${message["senderId"]} ${message["senderMail"]} ${message["senderMessage"]}   ${message["time"]}");
-                                        },
-                                        child: Text(
-                                          message["message"],
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 17),
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text("${message["time"]}"),
-                                        Icon(Icons.done_all)
-                                      ],
-                                    ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(userTime,
+                                        style: TextStyle(fontSize: 10)),
+                                    Icon(
+                                      Icons.done_all,
+                                      size: 19,
+                                    )
                                   ],
                                 ),
-                              );
-                            },
+                              ],
+                            ),
                           );
-                      }
+                        },
+                      );
                     }),
               ),
             ),
@@ -163,7 +206,6 @@ class ChatRoom extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Card(
-                  color: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   child: SizedBox(
@@ -176,15 +218,17 @@ class ChatRoom extends StatelessWidget {
                             icon: Icon(Icons.emoji_emotions_outlined)),
                         Expanded(
                           child: TextFormField(
+                            onTap: () {},
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
-                            controller: controller.chatMessage,
+                            controller: chatMessage,
                             onEditingComplete: () {
-                              if (controller.chatMessage.text.isNotEmpty) {
+                              if (chatMessage.text.isNotEmpty) {
                                 controller.userChat(
                                     controller.email ?? "",
                                     controller.id ?? "",
-                                    controller.chatMessage.text);
+                                    chatMessage.text,
+                                    DateTime.now().toString());
                               }
                             },
                             decoration: InputDecoration(
@@ -194,7 +238,14 @@ class ChatRoom extends StatelessWidget {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (context) {
+                                return Content();
+                              },
+                            );
+                          },
                           icon: Icon(Icons.attach_file),
                         ),
                         IconButton(
@@ -208,43 +259,86 @@ class ChatRoom extends StatelessWidget {
                 CircleAvatar(
                   radius: 23,
                   backgroundColor: Colors.green,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 10, top: 10, bottom: 10),
-                    child: MaterialButton(
-                        onPressed: () async {
-                          if (controller.chatMessage.text.isNotEmpty) {
-                            controller.userChat(
-                              controller.email ?? "",
-                              controller.id ?? "",
-                              controller.chatMessage.text,
-                            );
-                          }
-                          print("halo hu call thavu hu");
-                          print(controller.chatMessage.text);
-                          controller.chatMessage.clear();
-                        },
-                        child: Icon(
-                          Icons.send_rounded,
-                          color: Colors.white,
-                        )),
-                  ),
+                  child: IconButton(
+                      onPressed: () async {
+                        if (chatMessage.text.isNotEmpty) {
+                          controller.userChat(
+                            controller.email ?? "",
+                            controller.id ?? "",
+                            chatMessage.text,
+                            DateTime.now().toString(),
+                          );
+                        }
+                        print("halo hu call thavu hu");
+
+                        chatMessage.clear();
+                      },
+                      icon: Icon(
+                        (Icons.send_rounded),
+                        color: Colors.white,
+                      )),
                 ),
               ],
             ),
           ],
         ),
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 48.0),
-        child: FloatingActionButton(
-          backgroundColor: Colors.white,
-          onPressed: () {
-            var index = 0;
-            if (index == 0) {}
-          },
-          child: Icon(Icons.arrow_downward),
-        ),
-      ),
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.only(bottom: 48.0),
+      //   child: FloatingActionButton(
+      //     backgroundColor: Colors.white,
+      //     onPressed: () {
+      //       var index = 0;
+      //       if (index == 0) {}
+      //     },
+      //     child: Icon(Icons.arrow_downward),
+      //   ),
+      // ),
     );
   }
 }
+
+class DateBadge extends StatelessWidget {
+  final DateTime date;
+
+  const DateBadge({Key? key, required this.date}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      color: Colors.grey[300],
+      child: Text(
+        _formatDate(date),
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    // Format the date as needed
+    if (DateTime.now().difference(date).inDays == 0) {
+      return 'Today';
+    } else if (DateTime.now().difference(date).inDays == 1) {
+      return 'Yesterday';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
+  }
+}
+
+// class MessageTile extends StatelessWidget {
+//   final Message message;
+//
+//
+//   const MessageTile({Key? key, required this.message, required this.isToday, required this.isYesterday})
+//       : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListTile(
+//       title: Text(message.text),
+//       subtitle: Text(isToday ? 'Today' : isYesterday ? 'Yesterday' : ''),
+//     );
+//   }
+// }

@@ -3,6 +3,7 @@
 //     final userChat = userChatFromJson(jsonString);
 
 import 'dart:convert';
+import 'dart:ui';
 
 UserChat userChatFromJson(String str) => UserChat.fromJson(json.decode(str));
 
@@ -12,29 +13,26 @@ class UserChat {
   String? message;
   String? senderId;
   String? senderMail;
-  String? time;
+  DateTime? time;
 
   UserChat({
     this.message,
     this.senderId,
     this.senderMail,
     this.time,
-
   });
 
   factory UserChat.fromJson(Map<String, dynamic> json) => UserChat(
-    message: json["message"],
-    senderId: json["senderId"],
-    senderMail: json["senderMail"],
-    time: json["time"],
-
-  );
+        message: json["message"],
+        senderId: json["senderId"],
+        senderMail: json["senderMail"],
+        time: json["time"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "message": message,
-    "senderId": senderId,
-    "senderMail": senderMail,
-    "time": time,
-
-  };
+        "message": message,
+        "senderId": senderId,
+        "senderMail": senderMail,
+        "time": time,
+      };
 }

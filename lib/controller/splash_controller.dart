@@ -13,7 +13,7 @@ class SplashController extends GetxController {
 
   void goto() {
     Timer(Duration(seconds: 2), () {
-      Get.offNamed("login");
+      Get.offNamed("home");
     });
   }
 }

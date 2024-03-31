@@ -2,7 +2,9 @@
 
 import 'package:dating_app/controller/login_controller.dart';
 import 'package:dating_app/controller/signup_controller.dart';
+import 'package:dating_app/model/adduser_model.dart';
 import 'package:dating_app/model/singleton_class/addUser_class.dart';
+import 'package:dating_app/view/home/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,7 +20,7 @@ class Login1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+
       body: SafeArea(
         child: SingleChildScrollView(
           child: Form(
@@ -75,6 +77,42 @@ class Login1 extends StatelessWidget {
                       fontWeight:
                           Theme.of(context).textTheme.bodySmall?.fontWeight,
                       color: Colors.black),
+                ),
+                Align(
+                  alignment: Alignment(-0.8, 0),
+                  child: Text(
+                    "UserName",
+                    style: TextStyle(
+                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        color: Theme.of(context).textTheme.bodyMedium?.color),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.name,
+                    validator: (value) {
+                      if (value?.isEmpty ?? false) {
+                        return "* Plz Enter Your Name";
+                      } else {
+                        return null;
+                      }
+                    },
+                    controller: name,
+                    onFieldSubmitted: (value) {},
+                    decoration: InputDecoration(
+                      hintText: "Enter Your Name",
+                      enabled: true,
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: Colors.green)),
+                      suffixIcon: Icon(Icons.edit, color: Colors.green),
+                      hintStyle: TextStyle(color: Colors.green),
+                    ),
+                  ),
                 ),
                 Align(
                   alignment: Alignment(-0.8, 0),
@@ -153,7 +191,7 @@ class Login1 extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.sizeOf(context).height / 5,
+                  height: MediaQuery.sizeOf(context).height / 10,
                 ),
                 ElevatedButton(
                   style: ButtonStyle(
@@ -166,15 +204,18 @@ class Login1 extends StatelessWidget {
                     ),
                   ),
                   onPressed: () async {
-                    try {
-                      UserCredential user = await FirebaseAuth.instance
-                          .signInWithEmailAndPassword(
-                              email: mail.text, password: password.text);
-                      AddUserModel().addUser(user.user);
-
-                    } on FirebaseAuthException catch (e) {
-                      print(e.message);
-                    }
+                 if(controller.gKey.currentState?.validate()??true){
+                   try {
+                     UserCredential user = await FirebaseAuth.instance
+                         .signInWithEmailAndPassword(
+                         email: mail.text, password: password.text);
+                     AddUserModel().addUser(user.user);
+                     AddUser(name: name.text,);
+                     Get.to(()=>Home());
+                   } on FirebaseAuthException catch (e) {
+                     print(e.message);
+                   }
+                 }
                   },
                   child: Text(
                     "Log in",

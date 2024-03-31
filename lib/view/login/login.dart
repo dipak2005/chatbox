@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:dating_app/controller/login_controller.dart';
+import 'package:dating_app/view/home/pages/image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -64,7 +65,7 @@ class Login extends StatelessWidget {
                     foregroundColor: Colors.white,
                     radius: 35,
                     child: InkWell(
-                      onTap: () async {
+                      onTap: ()  {
                         controller.googleSignIn();
                       },
                       child: CircleAvatar(
@@ -90,7 +91,8 @@ class Login extends StatelessWidget {
                         MediaQuery.sizeOf(context).width / 1.2,
                         MediaQuery.sizeOf(context).height / 15))),
                 onPressed: () {
-                  controller.goMail();
+                  Get.to(()=>UserImage());
+
                 },
                 child: Text(
                   "Sign up with mail ",

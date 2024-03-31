@@ -1,5 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/controller/add_info_controller.dart';
 import 'package:dating_app/controller/login_controller.dart';
 import 'package:dating_app/controller/signup_controller.dart';
@@ -18,7 +22,7 @@ class AddInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    var user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Profile"),
@@ -32,20 +36,33 @@ class AddInfo extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  height: MediaQuery.sizeOf(context).height / 5.2,
-                  width: MediaQuery.sizeOf(context).width / 2.2,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child:Image.network(controller.image,fit: BoxFit.cover),
-                ),
+                StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("user")
+                        .doc(user?.uid)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      var data = snapshot.data?.data() as Map<String, dynamic>?;
+                      return Container(
+                          height: MediaQuery.sizeOf(context).height / 5.2,
+                          width: MediaQuery.sizeOf(context).width / 2.2,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100)),
+                          child: CircleAvatar(
+                              radius: 50,
+                              child:
+                                  ("${data?["image"]}").startsWith("https://")
+                                      ? Image.network(
+                                          ("${data?["image"]}"),
+                                         cacheHeight: 150,cacheWidth: 180,
+                                        )
+                                      : Image.memory(
+                                          base64Decode("${data?["image"]}"),
+                                          fit: BoxFit.cover)));
+                    }),
                 TextButton(
-                  onPressed: () {
-
-                  },
+                  onPressed: () {},
                   child: Text("Edit Picture"),
                 ),
                 Align(alignment: Alignment(-0.87, 0), child: Text("Name")),
@@ -171,12 +188,12 @@ class AddInfo extends StatelessWidget {
                           MediaQuery.sizeOf(context).height / 17),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (controller.editKey.currentState?.validate() ?? true) {
                       controller.editKey.currentState?.save();
-                      FocusScope.of(context).nextFocus();
                       AddUser(
-                          image: "",
+                          image:
+                              "https://as2.ftcdn.net/v2/jpg/05/89/93/27/500_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg",
                           phone: number.text,
                           email: mail.text,
                           name: name.text);

@@ -19,18 +19,6 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      // appBar: AppBar(
-      //   title: Obx(
-      //     ()=> Text(
-      // (controller.pIndex.value==0)?"Home":(controller.pIndex.value==1)?"Contacts":(controller.pIndex.value==2)?"Calls":"Settings",
-      //       style: TextStyle(
-      //           fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
-      //           color: Theme.of(context).textTheme.displayMedium?.color),
-      //     ),
-      //   ),
-      //   centerTitle: true,
-
-      // ),
       body: SafeArea(
         child: Column(
           children: [

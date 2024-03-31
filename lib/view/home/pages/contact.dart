@@ -1,4 +1,7 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
+
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/controller/chat_controller.dart';
@@ -17,7 +20,7 @@ class Contacts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    var user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -46,47 +49,91 @@ class Contacts extends StatelessWidget {
           )
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection("user").snapshots(),
-        builder: (context, snapshot) {
-          var data = snapshot.data?.docs ?? [];
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              var item = data[index];
-              var userdata = item.data() as Map<String, dynamic>;
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.sizeOf(context).height / 50,
+            ),
+            Container(
+              height: MediaQuery.sizeOf(context).height / 0.9,
+              decoration: BoxDecoration(
 
-              return ListTile(
-                onTap: () {
-                  var email = userdata["email"];
-                  var phone = userdata["number"];
-                  var username = userdata["name"];
-                  var photo = userdata["image"];
-                  var lastMsg = userdata["LastMessage"];
-                  Get.to(() => ChatRoom(), arguments: {
-                    "email": email,
-                    "id": item.id,
-                    "phone": phone,
-                    "name": name,
-                    "photo": photo,
-                    "lastMsg": lastMsg,
-                  });
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(40),
+                    topLeft: Radius.circular(40)),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black26,
+                      offset: Offset(0.90, 0.9),
+                      blurStyle: BlurStyle.outer,
+                      blurRadius: 10)
+                ],
+              ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("user")
+                    .where("email",
+                        isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  var data = snapshot.data?.docs ?? [];
+                  return ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      var item = data[index];
+                      var userdata = item.data() as Map<String, dynamic>;
+
+                      return ListTile(
+                        onTap: () {
+                          var email = userdata["email"];
+                          var phone = userdata["number"];
+                          var username = userdata["name"];
+                          var photo =
+                              ("${userdata["image"]}").startsWith("https://")
+                                  ? ("${userdata["image"]}")
+                                  : ("${userdata["image"]}")
+                                      .replaceAll('-', '+')
+                                      .replaceAll('-', '/');
+                          var lastMsg = userdata["LastMessage"];
+
+                          Get.to(() => ChatRoom(), arguments: {
+                            "email": email,
+                            "id": item.id,
+                            "phone": phone,
+                            "name": username,
+                            "photo": photo,
+                            "lastMsg": lastMsg,
+                          });
+                        },
+                        leading: Container(
+                          height: 50,
+                          width: 50,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30)),
+                          child: CircleAvatar(
+                              radius: 50,
+                              child: ("${userdata["image"]}")
+                                      .startsWith("https://")
+                                  ? Image.network(
+                                      ("${userdata["image"]}"),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.memory(
+                                      base64Decode("${userdata["image"]}"),
+                                      fit: BoxFit.cover)),
+                        ),
+                        title: Text("${userdata["name"]}"),
+                        subtitle: Text("${userdata["email"]}"),
+                      );
+                    },
+                  );
                 },
-                leading: Container(
-                  height: 50,
-                  width: 50,
-                  clipBehavior: Clip.antiAlias,
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(30)),
-                  child:
-                      Image.network("${userdata["image"]}", fit: BoxFit.cover),
-                ),
-                title: Text("${userdata["email"]}"),
-                subtitle: Text("${userdata["name"]}"),
-              );
-            },
-          );
-        },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

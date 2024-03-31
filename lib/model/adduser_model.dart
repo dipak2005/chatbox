@@ -16,38 +16,44 @@ class AddUser {
   String? lastMessage;
   String? lastTime;
   String? image;
-  bool? online;
 
-  AddUser({
-    this.name,
-    this.email,
-    this.phone,
-    this.status,
-    this.lastMessage,
-    this.lastTime,
-    this.image,
-    this.online,
-  });
+  bool? online;
+  String? fcmToken;
+
+  AddUser(
+      {this.name,
+      this.email,
+      this.phone,
+      this.status,
+      this.lastMessage,
+      this.lastTime,
+      this.image,
+
+      this.online,
+      this.fcmToken});
 
   factory AddUser.fromJson(Map<String, dynamic> json) => AddUser(
-    name: json["name"],
-    email: json["email"],
-    phone: json["phone"],
-    status: json["status"],
-    lastMessage: json["lastMessage"],
-    lastTime: json["lastTime"],
-    image: json["image"],
-    online: json["online"],
-  );
+      name: json["name"],
+      email: json["email"],
+      phone: json["phone"],
+      status: json["status"],
+      lastMessage: json["lastMessage"],
+      lastTime: json["lastTime"],
+      image: json["image"],
+      online: json["online"],
+      fcmToken: json["fcmToken"],
+     );
 
   Map<String, dynamic> toJson() => {
-    "name": name,
-    "email": email,
-    "phone": phone,
-    "status": status,
-    "lastMessage": lastMessage,
-    "lastTime": lastTime,
-    "image": image,
-    "online": online,
-  };
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "status": status,
+        "lastMessage": lastMessage,
+        "lastTime": lastTime,
+
+        "image": image,
+        "online": online,
+        "fcmToken": fcmToken
+      };
 }

@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:dating_app/model/adduser_model.dart';
 import 'package:dating_app/model/singleton_class/addUser_class.dart';
@@ -14,30 +16,36 @@ import '../view/home/home.dart';
 
 class SignupController extends GetxController {
   RxBool isTerm = RxBool(false);
+
   // TextEditingController mail = TextEditingController();
   // TextEditingController name = TextEditingController();
   // TextEditingController password = TextEditingController();
   // TextEditingController newPassword = TextEditingController();
   GlobalKey<FormState> globalKey = GlobalKey<FormState>();
   RxString? value;
-
+  String? image;
   void goto() async {
     if (globalKey.currentState?.validate() ?? false) {
       FocusScope.of(Get.context!).unfocus();
       UserCredential user = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: mail.text, password: password.text);
-      AddUserModel().addUser(user.user);
-      AddUser(name: name.text,email: mail.text,phone: number.text);
-      GetSnackBar(
-        title: "Register",
-        backgroundColor: Colors.green,
-        message: "User Added SuccessFully",
-        duration: Duration(seconds: 2),
-      );
-      Get.toNamed("home");
-    }
+      //base memory image:
+      if(filepath.isNotEmpty){
+        var file = File(filepath.value);
+        var readAsBytes =await file.readAsBytes();
+        image = base64Encode(readAsBytes);
 
+      }
+      AddUserModel().addUser(user.user);
+      AddUser(
+          name: name.text,
+          email: mail.text,
+          phone: number.text,
+          image: image);
+
+     Get.to(()=>Home());
+    }
   }
 
   void googleSignIn() async {
@@ -60,7 +68,7 @@ class SignupController extends GetxController {
       var data = await FirebaseAuth.instance.signInWithCredential(credential);
       print("$credential");
       User? userData = data.user;
-            AddUserModel().addUser(userData);
+      AddUserModel().addUser(userData);
       // GoogleSignIn().signOut();
       // FirebaseAuth.instance.signOut();
       Get.showSnackbar(GetSnackBar(
@@ -70,28 +78,8 @@ class SignupController extends GetxController {
         message: "User Added Successfully",
       ));
       Timer(Duration(seconds: 3), () {
-        Get.to(()=>Home());
+        Get.to(() => Home());
       });
     }
   }
-
-  // void gotoLogin1() {
-  //   Get.toNamed("log1");
-  // }
-  //
-  // void goMail() {
-  //
-  //   Get.toNamed("signup");
-  // }
-  //
-  // void goLogin(){
-  //
-  //   Get.toNamed("home");
-  // }
-  //
-  // void goPassword() {
-  //   Get.toNamed("password");
-  // }
-
-
 }
