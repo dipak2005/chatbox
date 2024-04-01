@@ -8,7 +8,7 @@
 PRODUCT_NAME = dating_app
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.datingApp
+PRODUCT_BUNDLE_IDENTIFIER = dipak.com.datingApp
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2023 dipak.com. All rights reserved.

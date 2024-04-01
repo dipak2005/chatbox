@@ -209,9 +209,9 @@ class Login1 extends StatelessWidget {
                      UserCredential user = await FirebaseAuth.instance
                          .signInWithEmailAndPassword(
                          email: mail.text, password: password.text);
-                     AddUserModel().addUser(user.user);
-                     AddUser(name: name.text,);
-                     Get.to(()=>Home());
+                     // AddUserModel().addUser(user.user);
+                     // AddUser(name: name.text,);
+                     Get.off(()=>Home());
                    } on FirebaseAuthException catch (e) {
                      print(e.message);
                    }

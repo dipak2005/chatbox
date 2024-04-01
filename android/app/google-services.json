@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1059534418974",
+    "firebase_url": "https://chat-app-f464d-default-rtdb.firebaseio.com",
     "project_id": "chat-app-f464d",
     "storage_bucket": "chat-app-f464d.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.dating_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1059534418974-j82nn09td0fgvr3s1cnlkigq2f85oa6g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dating_app",
+            "certificate_hash": "8cf6d8071cd0443af5ecd5a5a883fc0f7c5122c4"
+          }
+        },
+        {
+          "client_id": "1059534418974-o8vgtfsv11it9q6peut73hsrkedoui57.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAIAnfl4UQ_EKH72OCen5_wMBrxFVod7Lw"
@@ -20,7 +34,41 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1059534418974-o8vgtfsv11it9q6peut73hsrkedoui57.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1059534418974:android:db1de122e760ebff146a0f",
+        "android_client_info": {
+          "package_name": "dipak.com.dating_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1059534418974-o8vgtfsv11it9q6peut73hsrkedoui57.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIAnfl4UQ_EKH72OCen5_wMBrxFVod7Lw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1059534418974-o8vgtfsv11it9q6peut73hsrkedoui57.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -58,7 +58,7 @@ class LoginController extends GetxController {
       var data = await FirebaseAuth.instance.signInWithCredential(credential);
       print("$credential");
       User? userData = data.user;
-      AddUserModel().addUser(userData);
+      // AddUserModel().addUser(userData);
 
       Get.showSnackbar(GetSnackBar(
         title: "Login",

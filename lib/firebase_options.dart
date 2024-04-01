@@ -54,9 +54,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAIAnfl4UQ_EKH72OCen5_wMBrxFVod7Lw',
-    appId: '1:1059534418974:android:6dbaab6086867057146a0f',
+    appId: '1:1059534418974:android:db1de122e760ebff146a0f',
     messagingSenderId: '1059534418974',
     projectId: 'chat-app-f464d',
+    databaseURL: 'https://chat-app-f464d-default-rtdb.firebaseio.com',
     storageBucket: 'chat-app-f464d.appspot.com',
   );
 }
