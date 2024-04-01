@@ -43,23 +43,28 @@ class AddInfo extends StatelessWidget {
                         .snapshots(),
                     builder: (context, snapshot) {
                       var data = snapshot.data?.data() as Map<String, dynamic>?;
-                      return Container(
-                          height: MediaQuery.sizeOf(context).height / 5.2,
-                          width: MediaQuery.sizeOf(context).width / 2.2,
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100)),
-                          child: CircleAvatar(
-                              radius: 50,
-                              child:
-                                  ("${data?["image"]}").startsWith("https://")
-                                      ? Image.network(
-                                          ("${data?["image"]}"),
-                                         cacheHeight: 150,cacheWidth: 180,
-                                        )
-                                      : Image.memory(
-                                          base64Decode("${data?["image"]}"),
-                                          fit: BoxFit.cover)));
+                      return CircleAvatar(
+                        radius: 60,
+                        child: Container(
+                            height:
+                            MediaQuery.sizeOf(context).height / 3.1,
+                            width:
+                            MediaQuery.sizeOf(context).width / 3.3,
+                            margin: EdgeInsets.all(4),
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius:
+                                BorderRadius.circular(100)),
+                            child: ("${data?["image"]}").startsWith("https://")
+                                ? Image.network(
+                                    ("${data?["image"]}"),
+                                   fit: BoxFit.cover,
+                                  )
+                                : Image.memory(
+                                    base64Decode("${data?["image"]}"),
+                                    fit: BoxFit.cover)),
+                      );
                     }),
                 TextButton(
                   onPressed: () {},

@@ -14,25 +14,26 @@ class UserChat {
   String? senderId;
   String? senderMail;
   DateTime? time;
-
-  UserChat({
-    this.message,
-    this.senderId,
-    this.senderMail,
-    this.time,
-  });
+  bool isRead=false;
+  String? image;
+  UserChat(
+      {this.message, this.senderId, this.senderMail, this.time, required this.isRead,this.image});
 
   factory UserChat.fromJson(Map<String, dynamic> json) => UserChat(
-        message: json["message"],
-        senderId: json["senderId"],
-        senderMail: json["senderMail"],
-        time: json["time"],
-      );
+      message: json["message"],
+      senderId: json["senderId"],
+      senderMail: json["senderMail"],
+      time: json["time"],
+      isRead: json["isRead"],
+      image: json["image"],
+  );
 
   Map<String, dynamic> toJson() => {
         "message": message,
         "senderId": senderId,
         "senderMail": senderMail,
         "time": time,
+        "isRead": isRead,
+    "image":image
       };
 }

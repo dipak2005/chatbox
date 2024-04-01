@@ -14,15 +14,24 @@ class ProfileController extends GetxController {
   var user = FirebaseAuth.instance.currentUser;
 
   String? photo = "";
+  String? name;
+  String? number;
+  String? email;
+  String? lastMsg;
 
   @override
   void onInit() {
+    super.onInit();
     FirebaseFirestore.instance
         .collection("user")
         .get()
         .then((value) => {print("data inserted")});
-    super.onInit();
+
+    var args = Get.arguments as Map<String, dynamic>;
+    photo = args["image"];
+    name = args["name"];
+    number = args["phone"];
+    email = args["email"];
+    lastMsg = args["lastMessage"];
   }
-
-
 }

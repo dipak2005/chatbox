@@ -1,19 +1,24 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:dating_app/controller/chat_controller.dart';
 import 'package:dating_app/controller/content_controller.dart';
 import 'package:dating_app/model/login&signp.dart';
+import 'package:dating_app/view/home/docs/image_sender.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Content extends StatelessWidget {
   final ContentController controller = Get.put(ContentController());
-   Content({super.key});
+  ChatController chat = Get.find<ChatController>();
+
+  Content({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          borderRadius:BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       child: Scaffold(
           appBar: AppBar(
             title: Text("Share a Content",
@@ -26,13 +31,35 @@ class Content extends StatelessWidget {
                 color: Theme.of(context).cardColor,
                 elevation: 0,
                 child: ListTile(
-                  onTap: () {
-                  controller.pickImage(true);
+                  onTap: () async {
+                    if (controller.filepath.value.isEmpty) {
+                      await chat.pickImage(true);
+                      chat.userChat(
+                          chat.email ?? "",
+                          chat.id ?? "",
+                          chatMessage.text,
+                          DateTime.now().toString(),
+                          false,
+                          chat.filepath.value);
+                      // await  Get.to(()=>ChatRoom());
+                    }
                   },
                   leading: CircleAvatar(
                     backgroundColor: Colors.lightGreen.shade50,
                     child: IconButton(
-                        onPressed: () {},
+                        onPressed: () async{
+                          if (controller.filepath.value.isEmpty) {
+                            await chat.pickImage(true);
+                            chat.userChat(
+                                chat.email ?? "",
+                                chat.id ?? "",
+                                chatMessage.text,
+                                DateTime.now().toString(),
+                                false,
+                                chat.filepath.value);
+                            // await  Get.to(()=>ChatRoom());
+                          }
+                        },
                         icon: Icon(
                           Icons.camera_alt_outlined,
                           color: Theme.of(context).primaryColorDark,
@@ -51,14 +78,34 @@ class Content extends StatelessWidget {
                 color: Theme.of(context).cardColor,
                 elevation: 0,
                 child: ListTile(
-                  onTap: () {
-                   controller.pickMultiple();
+                  onTap: () async{
+                    if (controller.filepath.value.isEmpty) {
+                      await chat.pickMedia(true);
+                      chat.userChat(
+                          chat.email ?? "",
+                          chat.id ?? "",
+                          chatMessage.text,
+                          DateTime.now().toString(),
+                          false,
+                          chat.filepath.value);
+                      // await  Get.to(()=>ChatRoom());
+                    }
                   },
                   leading: CircleAvatar(
                     backgroundColor: Colors.lightGreen.shade50,
                     child: IconButton(
-                        onPressed: () {
-                          controller.pickMultiple();
+                        onPressed: ()async {
+                          if (controller.filepath.value.isEmpty) {
+                            await chat.pickMedia(true);
+                            chat.userChat(
+                                chat.email ?? "",
+                                chat.id ?? "",
+                                chatMessage.text,
+                                DateTime.now().toString(),
+                                false,
+                                chat.filepath.value);
+                            // await  Get.to(()=>ChatRoom());
+                          }
                         },
                         icon: Icon(
                           Icons.file_copy_outlined,
@@ -134,14 +181,38 @@ class Content extends StatelessWidget {
                 color: Theme.of(context).cardColor,
                 elevation: 0,
                 child: ListTile(
+                  onTap: () async{
+                    if (controller.filepath.value.isEmpty) {
+                      await chat.pickMedia(true);
+                      chat.userChat(
+                          chat.email ?? "",
+                          chat.id ?? "",
+                          chatMessage.text,
+                          DateTime.now().toString(),
+                          false,
+                          chat.filepath.value);
+                      // await  Get.to(()=>ChatRoom());
+                    }
+                  },
                   leading: CircleAvatar(
                     backgroundColor: Colors.lightGreen.shade50,
                     child: IconButton(
-                        onPressed: () {
-                          controller.pickMultiple();
+                        onPressed: ()async {
+                          if (controller.filepath.value.isEmpty) {
+                            await chat.pickMedia(true);
+                            chat.userChat(
+                                chat.email ?? "",
+                                chat.id ?? "",
+                                chatMessage.text,
+                                DateTime.now().toString(),
+                                false,
+                                chat.filepath.value);
+                            // await  Get.to(()=>ChatRoom());
+                          }
+
                         },
                         icon: Icon(
-                          Icons.person_pin,
+                          Icons.perm_media_outlined,
                           color: Theme.of(context).primaryColorDark,
                         )),
                   ),

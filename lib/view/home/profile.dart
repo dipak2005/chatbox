@@ -21,75 +21,174 @@ class Profile extends StatelessWidget {
     var user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        appBar: AppBar(
-          title: Text("View Profile"),
-          actions: [
-            PopupMenuButton(
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    child: Text("Edits"),
-                    onTap: () {
-                      Get.to(() => AddInfo(),
-                          arguments: {"photo": controller.photo});
-                    },
+      backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: AppBar(
+        title: Text("View Profile"),
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  child: Text("Edits"),
+                  onTap: () {
+                    Get.to(() => AddInfo(),
+                        arguments: {"photo": controller.photo});
+                  },
+                ),
+                PopupMenuItem(child: Text("Share")),
+              ];
+            },
+          )
+        ],
+      ),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            radius: 60,
+            child: Container(
+              height: MediaQuery.sizeOf(context).height / 3.1,
+              width: MediaQuery.sizeOf(context).width / 3.3,
+              margin: EdgeInsets.all(4),
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(100)),
+              child: (controller.photo ?? "").startsWith("https://")
+                  ? Image.network(
+                      (controller.photo ?? ""),
+                      fit: BoxFit.cover,
+                    )
+                  : Image.memory(base64Decode(controller.photo ?? ""),
+                      fit: BoxFit.cover),
+            ),
+          ),
+          Text(
+            controller.name ?? "",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: Theme.of(context).textTheme.displaySmall?.fontSize,
+            ),
+          ),
+          Text(
+            controller.lastMsg ?? "",
+            style: TextStyle(
+                fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: icon.length,
+              itemBuilder: (context, index) {
+                var icons = icon[index];
+                return Container(
+                  margin: EdgeInsets.all(20),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.lightGreen.shade50,
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: icons,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
                   ),
-                  PopupMenuItem(child: Text("Share")),
-                ];
+                );
               },
-            )
-          ],
-        ),
-        body: StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("user")
-                .doc(user?.uid)
-                .snapshots(),
-            builder: (context, snapshot) {
-              var data = snapshot.data?.data() as Map<String, dynamic>?;
-              controller.photo = data?["image"];
-              return Container(
-                height: MediaQuery.sizeOf(context).height,
-                width: MediaQuery.sizeOf(context).width,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: MediaQuery.sizeOf(context).height / 5.2,
-                      width: MediaQuery.sizeOf(context).width / 2.2,
-                      clipBehavior: Clip.antiAlias,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: CircleAvatar(
-                        radius: 50,
-                        child:  ("${data?["image"]}").startsWith("https://")
-                            ? Image.network(
-                          ("${data?["image"]}"),
-                          fit: BoxFit.cover,
-                        )
-                            : Image.memory(base64Decode("${data?["image"]}"),
-                            fit: BoxFit.cover)),
+            ),
+          ),
+          Container(
+            height: MediaQuery.sizeOf(context).height / 1.8,
+            width: MediaQuery.sizeOf(context).width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.horizontal(
+                right: Radius.circular(40),
+                left: Radius.circular(40),
+              ),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black26,
+                    blurStyle: BlurStyle.outer,
+                    offset: Offset(0.9, 0.9),
+                    blurRadius: 10)
+              ],
+            ),
+            child: Column(
+              children: [
+                Card(
+                  margin: EdgeInsets.only(top: 20),
+                  elevation: 0,
+                  child: ListTile(
+                    title: Text(
+                      "Display Name",
+                      style: TextStyle(fontSize: 13),
                     ),
-                    Text(
-                      "${data?["name"]}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize:
-                            Theme.of(context).textTheme.displaySmall?.fontSize,
-                      ),
-                    ),
-                    Text(
-                      "+91 ${data?["phone"]}",
+                    subtitle: Text(
+                      controller.name ?? "",
                       style: TextStyle(
                           fontSize:
-                              Theme.of(context).textTheme.bodyLarge?.fontSize),
+                              Theme.of(context).textTheme.titleMedium?.fontSize,
+                          fontWeight: FontWeight.w700),
                     ),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  child: ListTile(
+                    title: Text(
+                      "Email Address",
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    subtitle: Text(
+                      controller.email ?? "",
+                      style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.titleMedium?.fontSize,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  child: ListTile(
+                    title: Text(
+                      "Phone Number",
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    subtitle: Text(
+                      controller.number ?? "",
+                      style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.titleMedium?.fontSize,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Media Shared"),
+                    SizedBox(
+                      width: MediaQuery.sizeOf(context).width/2.2,
+                    ),
+                    TextButton(onPressed: () {}, child: Text("View All"))
                   ],
                 ),
-              );
-            }));
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
+
+List<Icon> icon = [
+  Icon(Icons.message),
+  Icon(Icons.videocam_outlined),
+  Icon(Icons.call_outlined),
+  Icon(Icons.more_horiz),
+];

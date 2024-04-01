@@ -8,6 +8,7 @@ import 'package:dating_app/model/setting_detail_util.dart';
 import 'package:dating_app/model/settinglist_model.dart';
 import 'package:dating_app/view/home/home.dart';
 import 'package:dating_app/view/home/pages/message.dart';
+import 'package:dating_app/view/home/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,10 @@ class Settings extends StatelessWidget {
                             snapshot.data?.data() as Map<String, dynamic>?;
                         return ListTile(
 
-                            onTap: () => controller.goProfile(),
+                            onTap: () {
+
+                              Get.to(()=>Profile(),arguments: data);
+                            },
                             leading: Container(
                               height: 50,
                               width: 50,

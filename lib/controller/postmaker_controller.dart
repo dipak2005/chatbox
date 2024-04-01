@@ -7,6 +7,7 @@ class PostMakerController extends GetxController {
   RxString filepath = "".obs;
   RxList<XFile>? imageFile = RxList<XFile>();
 
+
   Future<void> pickImage(bool isCamera) async {
     XFile? file = await ImagePicker()
         .pickImage(source: isCamera ? ImageSource.camera : ImageSource.gallery);
@@ -20,13 +21,15 @@ class PostMakerController extends GetxController {
   }
 
   Future<void> pickMultiImage() async {
-    try {
+
       final List<XFile> images = await ImagePicker().pickMultiImage();
       imageFile?.value = images;
-    } catch (e) {
-
-    }
+      //if()
   }
 
-  Future<void> requestPermission() async {}
+   @override
+  void onInit() {
+    super.onInit();
+    pickMultiImage();
+  }
 }

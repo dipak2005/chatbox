@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors
 
 import 'dart:convert';
 import 'dart:io';
@@ -6,7 +6,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/model/userchat_model.dart';
 import 'package:dating_app/view/home/docs/content.dart';
+import 'package:dating_app/view/home/docs/photobar.dart';
 import 'package:dating_app/view/home/pages/message.dart';
+import 'package:dating_app/view/home/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,52 +29,50 @@ class ChatRoom extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Stack(
-          children: [
-            Container(
-              height: 50,
-              width: 50,
-              clipBehavior: Clip.antiAlias,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(30)),
-              child: CircleAvatar(
-                child: ((controller.photo ?? "").startsWith("https://")
-                    ? Image.network(
-                        (controller.photo ?? ""),
-                        fit: BoxFit.cover,
+        leading: Container(
+          height: 50,
+          width: 50,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
+          child: CircleAvatar(
+            child: ((controller.photo ?? "").startsWith("https://")
+                ? Image.network(
+                    (controller.photo ?? ""),
+                    fit: BoxFit.cover,
+                  )
+                : Image.memory(base64Decode(controller.photo ?? ""),
+                    fit: BoxFit.cover)),
+          ),
+        ),
+        title: StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection("user")
+                .doc(controller.id ?? "")
+                .snapshots(),
+            builder: (context, snapshot) {
+              var status = snapshot.data?.data() as Map<String, dynamic>?;
+              return ListTile(
+                onTap: () {
+                  Get.to(() => Profile(), arguments: status);
+                },
+                title: Text(controller.username ?? "",
+                    style: TextStyle(
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    maxLines: 1),
+                subtitle: (status?["status"] == true)
+                    ? Text(
+                        (chatMessage.text.isEmpty) ?
+                        "Active now"
+                        : "typing",
+                        style: TextStyle(fontSize: 10),
                       )
-                    : Image.memory(base64Decode(controller.photo ?? ""),
-                        fit: BoxFit.cover)),
-              ),
-            ),
-            Positioned(
-                bottom: 11,
-                right: 10,
-                child: CircleAvatar(
-                  backgroundColor: Colors.lightGreen,
-                  radius: 5,
-                ))
-          ],
-        ),
-        title: ListTile(
-          title: Text(controller.username ?? "",
-              style: TextStyle(
-                overflow: TextOverflow.ellipsis,
-              ),
-              maxLines: 1),
-          subtitle: StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("user")
-                  .doc(controller.id ?? "")
-                  .snapshots(),
-              builder: (context, snapshot) {
-                var status = snapshot.data?.data() as Map<String, dynamic>?;
-                return Text(
-                  "${status?["status"]}",
-                  style: TextStyle(fontSize: 12),
-                );
-              }),
-        ),
+                    : Text(
+                        "Last seen at ${status?["lastTime"]}",
+                        style: TextStyle(fontSize: 10),
+                      ),
+              );
+            }),
         actions: [
           IconButton(
             onPressed: () {},
@@ -97,10 +97,7 @@ class ChatRoom extends StatelessWidget {
         width: MediaQuery.sizeOf(context).width,
         child: Column(
           children: [
-            // Text(
-            //   controller.chatRoomId.value,
-            //   style: TextStyle(fontSize: 20),
-            // ),
+
             Expanded(
               child: Obx(
                 () => StreamBuilder<QuerySnapshot>(
@@ -152,6 +149,7 @@ class ChatRoom extends StatelessWidget {
                                       vertical:
                                           MediaQuery.sizeOf(context).height *
                                               0.01),
+                                  clipBehavior: Clip.antiAlias,
                                   decoration: BoxDecoration(
                                     color: (isLogUser)
                                         ? Colors.green.shade200
@@ -174,11 +172,37 @@ class ChatRoom extends StatelessWidget {
                                           .collection("messages")
                                           .get();
                                     },
-                                    child: Text(
-                                      message["message"],
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 14),
-                                    ),
+                                    child: ("${message["image"]}".isEmpty)
+                                        ? Text(
+                                            message["message"],
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 14),
+                                          )
+                                        : InkWell(
+                                            onTap: () {
+                                              Get.to(() => PhotoBar(),
+                                                  arguments: message);
+                                            },
+                                            child: Container(
+                                              clipBehavior: Clip.antiAlias,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Image.file(
+                                                File("${message["image"]}"),
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height /
+                                                        3,
+                                                width:
+                                                    MediaQuery.sizeOf(context)
+                                                            .width /
+                                                        1.7,
+                                              ),
+                                            ),
+                                          ),
                                   ),
                                 ),
                                 // :SizedBox.shrink()
@@ -228,7 +252,9 @@ class ChatRoom extends StatelessWidget {
                                     controller.email ?? "",
                                     controller.id ?? "",
                                     chatMessage.text,
-                                    DateTime.now().toString());
+                                    DateTime.now().toString(),
+                                    false,
+                                    "");
                               }
                             },
                             decoration: InputDecoration(
@@ -249,7 +275,19 @@ class ChatRoom extends StatelessWidget {
                           icon: Icon(Icons.attach_file),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            if (controller.filepath.value.isEmpty) {
+                              await controller.pickImage(true);
+                              controller.userChat(
+                                  controller.email ?? "",
+                                  controller.id ?? "",
+                                  chatMessage.text,
+                                  DateTime.now().toString(),
+                                  false,
+                                  controller.filepath.value);
+                              // await  Get.to(()=>ChatRoom());
+                            }
+                          },
                           icon: Icon(Icons.camera_alt_outlined),
                         ),
                       ],
@@ -263,11 +301,12 @@ class ChatRoom extends StatelessWidget {
                       onPressed: () async {
                         if (chatMessage.text.isNotEmpty) {
                           controller.userChat(
-                            controller.email ?? "",
-                            controller.id ?? "",
-                            chatMessage.text,
-                            DateTime.now().toString(),
-                          );
+                              controller.email ?? "",
+                              controller.id ?? "",
+                              chatMessage.text,
+                              DateTime.now().toString(),
+                              false,
+                              "");
                         }
                         print("halo hu call thavu hu");
 

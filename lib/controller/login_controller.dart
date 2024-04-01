@@ -46,6 +46,7 @@ class LoginController extends GetxController {
         duration: Duration(microseconds: 500),
         message: "All Ready Exist",
       ));
+      Get.off(()=>Home());
     } else {
       var google = await GoogleSignIn().signIn();
 
@@ -65,7 +66,7 @@ class LoginController extends GetxController {
         duration: Duration(microseconds: 500),
         message: "User Added Successfully",
       ));
-      Get.to(() => Home());
+      Get.off(() => Home());
     }
   }
 }

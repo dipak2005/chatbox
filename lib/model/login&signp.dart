@@ -12,6 +12,7 @@ TextEditingController password = TextEditingController();
 TextEditingController newPassword = TextEditingController();
 TextEditingController number = TextEditingController();
 TextEditingController chatMessage = TextEditingController();
+TextEditingController search = TextEditingController();
 
 RxString filepath = "".obs;
 

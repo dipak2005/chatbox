@@ -16,7 +16,6 @@ class AddUser {
   String? lastMessage;
   String? lastTime;
   String? image;
-
   bool? online;
   String? fcmToken;
 

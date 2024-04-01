@@ -34,7 +34,6 @@ class UserImage extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 margin: EdgeInsets.only(top: 30),
                 decoration: BoxDecoration(
-
                     borderRadius: BorderRadius.all(Radius.circular(10))),
                 child: Center(
                     child: Column(
@@ -44,7 +43,7 @@ class UserImage extends StatelessWidget {
                         radius: 80,
                         backgroundColor: Colors.black12,
                         backgroundImage: filepath.isNotEmpty
-                            ?MemoryImage(base64Decode(filepath.value))
+                            ? FileImage(File(filepath.value))
                             : null,
                         child: filepath.isEmpty
                             ? IconButton(

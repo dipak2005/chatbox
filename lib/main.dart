@@ -7,6 +7,7 @@ import 'package:dating_app/view/home/add_info.dart';
 import 'package:dating_app/view/home/docs/account.dart';
 import 'package:dating_app/view/home/docs/chat_settings.dart';
 import 'package:dating_app/view/home/docs/help.dart';
+import 'package:dating_app/view/home/docs/image_sender.dart';
 import 'package:dating_app/view/home/docs/notifications.dart';
 import 'package:dating_app/view/home/docs/post_maker.dart';
 import 'package:dating_app/view/home/docs/post_viewer.dart';
@@ -128,6 +129,7 @@ class MyApp extends StatelessWidget {
         "help":(p0) => Help(),
         "postMaker":(p0) => PostViewer(),
         "postViewer":(p0) => PostMaker(),
+        "imageSender":(p0) => ImageSender(),
       },
     );
   }

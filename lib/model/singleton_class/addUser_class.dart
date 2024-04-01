@@ -21,11 +21,12 @@ class AddUserModel {
     return _instance;
   }
 
-  String? image;
-  var now = DateTime.now();
-  var time = DateFormat("HH:mm a");
 
   void addUser(User? user) async {
+    String? image;
+    DateTime dateTime = DateTime.now();
+    var time = DateFormat("HH:mm a").format(dateTime);
+
     var token = await FirebaseMessaging.instance.getToken();
 
     //base memory image:
@@ -40,7 +41,7 @@ class AddUserModel {
         email: user?.email ?? "$mail",
         image: user?.photoURL ?? "$image",
         lastMessage: "HII I'm Using ChatBox",
-        lastTime: time.format(now),
+        lastTime: time,
         online: true,
         phone: user?.phoneNumber ?? number.text,
         status: "",

@@ -58,7 +58,6 @@ class Contacts extends StatelessWidget {
             Container(
               height: MediaQuery.sizeOf(context).height / 0.9,
               decoration: BoxDecoration(
-
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(40),
                     topLeft: Radius.circular(40)),

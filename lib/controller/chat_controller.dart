@@ -30,9 +30,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   var user = FirebaseAuth.instance.currentUser;
   bool isToday = false;
   bool isYesterday = false;
-
+  String? image;
   var now = DateTime.now();
   var messageTime = DateFormat("HH:mm a");
+  RxList<XFile> multiList = RxList<XFile>();
 
   @override
   void onInit() {
@@ -113,7 +114,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   }
 
   void userChat(String receiverMail, String receiverId, String message,
-      String time) async {
+      String time, bool isRead, String image) async {
     var uChat = await FirebaseFirestore.instance
         .collection("chats")
         .doc("$senderId-$receiverId")
@@ -131,7 +132,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     var receiverToken = receiverData.data()?["fcmToken"];
     var receiverName = receiverData.data()?["name"];
 
-    sendFcmNotification(receiverToken, user?.displayName ?? "", message);
+    sendFcmNotification(receiverToken, user?.displayName ?? "", message, image);
 
     /*
   *
@@ -154,7 +155,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       "receiverId": receiverId,
       "senderMail": user?.email ?? "",
       "receiverMail": receiverMail,
-      "time": DateTime.now()
+      "time": DateTime.now(),
+      "isRead": false,
+      "image": image
     });
 
     rChat.reference.set({
@@ -164,27 +167,33 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       "receiverId": receiverId,
       "senderMail": user?.email ?? "",
       "receiverMail": email,
-      "time": DateTime.now()
+      "time": DateTime.now(),
+      "isRead": false,
+      "image": image
     });
 
     uChat.reference.collection("messages").doc("${DateTime.now()}").set(
           UserChat(
-            // status: status,
-            time: DateTime.now(),
-            message: message,
-            senderId: senderId,
-            senderMail: user?.email ?? "",
-          ).toJson(),
+                  // status: status,
+                  time: DateTime.now(),
+                  message: message,
+                  senderId: senderId,
+                  senderMail: user?.email ?? "",
+                  isRead: false,
+                  image: filepath.value)
+              .toJson(),
         );
 
     rChat.reference.collection("messages").doc("${DateTime.now()}").set(
           UserChat(
-            // status: status,
-            time: DateTime.now(),
-            message: message,
-            senderId: senderId,
-            senderMail: user?.email ?? "",
-          ).toJson(),
+                  // status: status,
+                  time: DateTime.now(),
+                  message: message,
+                  senderId: senderId,
+                  senderMail: user?.email ?? "",
+                  isRead: false,
+                  image: filepath.value)
+              .toJson(),
         );
   }
 
@@ -194,11 +203,12 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         date1.day == date2.day;
   }
 
-  void sendFcmNotification(
-      String receiverToken, String senderName, String message) async {
+  void sendFcmNotification(String receiverToken, String senderName,
+      String message, String image) async {
     Map<String, dynamic> map = {
       "to": receiverToken,
-      "notification": {"title": senderName, "body": message}
+      "notification": {"title": senderName, "body": message},
+      "data": {"image": (image.isNotEmpty) ? image : ""}
     };
 
     var receiverDetails = await http.post(
@@ -217,7 +227,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   RxString filepath = "".obs;
 
-  void pickImage(bool isCamara) async {
+  Future<void> pickImage(bool isCamara) async {
     XFile? file = await ImagePicker()
         .pickImage(source: isCamara ? ImageSource.camera : ImageSource.gallery);
     filepath.value = file!.path;
@@ -225,8 +235,16 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   Future<void> pickMedia(bool isCamera) async {
     XFile? file = await ImagePicker().pickMedia(
-        imageQuality: 720, maxWidth: MediaQuery.sizeOf(Get.context!).width);
+        maxHeight: MediaQuery.sizeOf(Get.context!).height / 1.6,
+        imageQuality: 100,
+        maxWidth: MediaQuery.sizeOf(Get.context!).width);
     filepath.value = file?.path ?? "";
+  }
+
+  Future<void> pickMultiple() async {
+    List<XFile> file = await ImagePicker().pickMultiImage(
+        maxWidth: MediaQuery.sizeOf(Get.context!).width, imageQuality: 100);
+    multiList.value = file;
   }
 // var now=DateTime.now();
 //   var perfectTime=DateFormat("HH:mm a");

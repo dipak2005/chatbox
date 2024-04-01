@@ -8,7 +8,7 @@ class PhotoController extends GetxController{
   void onInit() {
     super.onInit();
     var args=Get.arguments;
-    photo=args["photo"];
+    photo=args["image"];
     name=args["name"];
   }
 

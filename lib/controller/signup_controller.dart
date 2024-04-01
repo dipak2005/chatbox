@@ -44,7 +44,7 @@ class SignupController extends GetxController {
           phone: number.text,
           image: image);
 
-     Get.to(()=>Home());
+     Get.off(()=>Home());
     }
   }
 
