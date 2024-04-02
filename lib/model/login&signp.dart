@@ -15,13 +15,14 @@ TextEditingController chatMessage = TextEditingController();
 TextEditingController search = TextEditingController();
 
 RxString filepath = "".obs;
+RxBool isRead = false.obs;
 
 void pickImage(bool isCamara) async {
   XFile? file = await ImagePicker()
       .pickImage(source: isCamara ? ImageSource.camera : ImageSource.gallery);
   filepath.value = file!.path;
+}
 
-
-
-
+void read() {
+  isRead.value = true;
 }

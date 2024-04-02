@@ -315,9 +315,13 @@ class ChatRoom extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(userTime,
-                                        style: TextStyle(fontSize: 10)),
+                                        style: TextStyle(
+                                            fontSize: 10, color: Colors.white)),
                                     Icon(
                                       Icons.done_all,
+                                      color: (isRead.value == true)
+                                          ? Colors.blue
+                                          : Colors.white,
                                       size: 19,
                                     )
                                   ],

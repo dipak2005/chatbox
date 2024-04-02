@@ -199,7 +199,6 @@ class Message extends StatelessWidget {
                       //     isEqualTo: controller.receiverId.value)
                       // .orderBy("lastTime", descending: false)
                       .snapshots(),
-
                   builder: (context, snapshot) {
                     controller.foundData.assignAll(snapshot.data?.docs ?? []);
 
@@ -265,7 +264,7 @@ class Message extends StatelessWidget {
                                             var uid = FirebaseAuth.instance
                                                     .currentUser?.uid ??
                                                 "";
-
+                                            isRead.value = true;
                                             var id =
                                                 ((uid == item["receiverId"])
                                                     ? item["senderId"]

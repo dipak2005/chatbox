@@ -85,6 +85,7 @@ class Contacts extends StatelessWidget {
 
                       return ListTile(
                         onTap: () {
+                          isRead.value = true;
                           var email = userdata["email"];
                           var phone = userdata["number"];
                           var username = userdata["name"];
