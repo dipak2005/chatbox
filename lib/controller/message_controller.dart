@@ -9,6 +9,8 @@ class MessageController extends GetxController {
   String? name;
   RxString receiverId = "".obs;
   String? senderMail;
+
+
   final RxList<QueryDocumentSnapshot> chatData =
       RxList<QueryDocumentSnapshot>();
   final RxList<QueryDocumentSnapshot> foundData =

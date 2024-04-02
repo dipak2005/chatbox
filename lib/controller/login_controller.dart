@@ -46,7 +46,7 @@ class LoginController extends GetxController {
         duration: Duration(microseconds: 500),
         message: "All Ready Exist",
       ));
-      Get.off(()=>Home());
+      Get.off(() => Home());
     } else {
       var google = await GoogleSignIn().signIn();
 
@@ -59,6 +59,9 @@ class LoginController extends GetxController {
       print("$credential");
       User? userData = data.user;
       // AddUserModel().addUser(userData);
+      if (filepath.value.isEmpty) {
+        AddUserModel().addUser(userData);
+      }
 
       Get.showSnackbar(GetSnackBar(
         title: "Login",

@@ -8,6 +8,7 @@ import 'package:dating_app/view/home/docs/account.dart';
 import 'package:dating_app/view/home/docs/chat_settings.dart';
 import 'package:dating_app/view/home/docs/help.dart';
 import 'package:dating_app/view/home/docs/image_sender.dart';
+import 'package:dating_app/view/home/docs/media.dart';
 import 'package:dating_app/view/home/docs/notifications.dart';
 import 'package:dating_app/view/home/docs/post_maker.dart';
 import 'package:dating_app/view/home/docs/post_viewer.dart';
@@ -105,7 +106,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
     return GetMaterialApp(
-      title: "Unboxing Your Date",
+      title: "Let's chat 1 to 1",
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
@@ -130,6 +131,7 @@ class MyApp extends StatelessWidget {
         "postMaker":(p0) => PostViewer(),
         "postViewer":(p0) => PostMaker(),
         "imageSender":(p0) => ImageSender(),
+        "media":(p0) => Media(),
       },
     );
   }

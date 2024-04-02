@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:convert';
 
@@ -19,7 +19,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   String? email;
   String? phone;
   int? index;
-  String? username;
+  RxString username = "".obs;
   String? photo;
   String? lastMsg;
   RxBool status = false.obs;
@@ -30,10 +30,13 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   var user = FirebaseAuth.instance.currentUser;
   bool isToday = false;
   bool isYesterday = false;
-  String? image;
+  String image = "";
   var now = DateTime.now();
   var messageTime = DateFormat("HH:mm a");
   RxList<XFile> multiList = RxList<XFile>();
+  RxBool isDelete = false.obs;
+
+  Map<String, dynamic>? map = {};
 
   @override
   void onInit() {
@@ -46,7 +49,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       photo = args["photo"];
       phone = args["phone"];
       lastMsg = args["lastMsg"];
-      username = args["name"];
+      username.value = args["name"];
     }
 
     senderId = FirebaseAuth.instance.currentUser?.uid ?? "";
@@ -56,6 +59,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     updateStatus(
         WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed);
+  }
+
+  void delete() {
+    isDelete.value = true;
   }
 
   void updateStatus(AppLifecycleState state) {
@@ -113,8 +120,17 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     scrollController.jumpTo(end);
   }
 
+  void deleteMessage(messageDate) {
+    FirebaseFirestore.instance
+        .collection("messages")
+        .doc(messageDate)
+        .delete()
+        .then((value) => (value) {});
+  }
+
   void userChat(String receiverMail, String receiverId, String message,
-      String time, bool isRead, String image) async {
+      String time, bool isRead,
+      [image]) async {
     var uChat = await FirebaseFirestore.instance
         .collection("chats")
         .doc("$senderId-$receiverId")
@@ -245,6 +261,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     List<XFile> file = await ImagePicker().pickMultiImage(
         maxWidth: MediaQuery.sizeOf(Get.context!).width, imageQuality: 100);
     multiList.value = file;
+  }
+
+  void showSheet(String MessageDate) {
+
   }
 // var now=DateTime.now();
 //   var perfectTime=DateFormat("HH:mm a");

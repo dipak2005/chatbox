@@ -20,7 +20,6 @@ class Login1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Form(
@@ -83,7 +82,8 @@ class Login1 extends StatelessWidget {
                   child: Text(
                     "UserName",
                     style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.bodyMedium?.fontSize,
                         color: Theme.of(context).textTheme.bodyMedium?.color),
                   ),
                 ),
@@ -204,18 +204,24 @@ class Login1 extends StatelessWidget {
                     ),
                   ),
                   onPressed: () async {
-                 if(controller.gKey.currentState?.validate()??true){
-                   try {
-                     UserCredential user = await FirebaseAuth.instance
-                         .signInWithEmailAndPassword(
-                         email: mail.text, password: password.text);
-                     // AddUserModel().addUser(user.user);
-                     // AddUser(name: name.text,);
-                     Get.off(()=>Home());
-                   } on FirebaseAuthException catch (e) {
-                     print(e.message);
-                   }
-                 }
+                    if (controller.gKey.currentState?.validate() ?? true) {
+                      try {
+                        UserCredential user = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                                email: mail.text, password: password.text);
+
+                        User? userDetail = user.user;
+                        if (userDetail != null) {
+                          await userDetail.updateEmail(mail.text);
+                          await userDetail.updatePassword(password.text);
+                          await userDetail.updateDisplayName(name.text);
+
+                          Get.off(() => Home());
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        print(e.message);
+                      }
+                    }
                   },
                   child: Text(
                     "Log in",

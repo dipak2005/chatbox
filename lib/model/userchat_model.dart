@@ -15,9 +15,9 @@ class UserChat {
   String? senderMail;
   DateTime? time;
   bool isRead=false;
-  String? image;
+  String image="";
   UserChat(
-      {this.message, this.senderId, this.senderMail, this.time, required this.isRead,this.image});
+      {this.message, this.senderId, this.senderMail, this.time, required this.isRead,  required this.image});
 
   factory UserChat.fromJson(Map<String, dynamic> json) => UserChat(
       message: json["message"],

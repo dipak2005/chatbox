@@ -17,7 +17,9 @@ class ProfileController extends GetxController {
   String? name;
   String? number;
   String? email;
-  String? lastMsg;
+  String? lastMessage;
+ String? chatRoomId;
+ List<QueryDocumentSnapshot>? document;
 
   @override
   void onInit() {
@@ -32,6 +34,7 @@ class ProfileController extends GetxController {
     name = args["name"];
     number = args["phone"];
     email = args["email"];
-    lastMsg = args["lastMessage"];
+    lastMessage = args["lastMessage"];
+    chatRoomId=args["chatRoomId"];
   }
 }

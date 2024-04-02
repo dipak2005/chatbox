@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:convert';
 import 'dart:io';
@@ -51,26 +51,27 @@ class ChatRoom extends StatelessWidget {
                 .snapshots(),
             builder: (context, snapshot) {
               var status = snapshot.data?.data() as Map<String, dynamic>?;
-              return ListTile(
-                onTap: () {
-                  Get.to(() => Profile(), arguments: status);
-                },
-                title: Text(controller.username ?? "",
-                    style: TextStyle(
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    maxLines: 1),
-                subtitle: (status?["status"] == true)
-                    ? Text(
-                        (chatMessage.text.isEmpty) ?
-                        "Active now"
-                        : "typing",
-                        style: TextStyle(fontSize: 10),
-                      )
-                    : Text(
-                        "Last seen at ${status?["lastTime"]}",
-                        style: TextStyle(fontSize: 10),
+              controller.map = status;
+              return Obx(
+                () => ListTile(
+                  onTap: () {
+                    Get.to(() => Profile(), arguments: status);
+                  },
+                  title: Text(controller.username.value,
+                      style: TextStyle(
+                        overflow: TextOverflow.ellipsis,
                       ),
+                      maxLines: 1),
+                  subtitle: (status?["status"] == true)
+                      ? Text(
+                          (chatMessage.text.isEmpty) ? "Active now" : "typing",
+                          style: TextStyle(fontSize: 10),
+                        )
+                      : Text(
+                          "Last seen at ${status?["lastTime"]}",
+                          style: TextStyle(fontSize: 10),
+                        ),
+                ),
               );
             }),
         actions: [
@@ -86,18 +87,41 @@ class ChatRoom extends StatelessWidget {
             },
             icon: Icon(Icons.phone_outlined),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.more_vert),
-          ),
+          PopupMenuButton(
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  child: Text("View Profile"),
+                  onTap: () {
+                    print("controller${controller.chatRoomId.value}");
+                    Get.to(() => Profile(), arguments: {
+                      "image": controller.map?["image"],
+                      "name": controller.map?["name"],
+                      "number": controller.map?["phone"],
+                      "email": controller.map?["email"],
+                      "lastMessage": controller.map?["lastMessage"],
+                      "chatRoomId": controller.chatRoomId.value
+                    });
+                  },
+                ),
+                PopupMenuItem(child: Text("Share")),
+              ];
+            },
+          )
         ],
       ),
       body: Container(
         height: MediaQuery.sizeOf(context).height,
         width: MediaQuery.sizeOf(context).width,
-        child: Column(
+        child: Stack(
           children: [
-
+            Positioned(
+                height: MediaQuery.sizeOf(context).height,
+                width: MediaQuery.sizeOf(context).width,
+                child: Image.asset(
+                  "assets/image6.jpg",
+                  fit: BoxFit.fitHeight,
+                )),
             Expanded(
               child: Obx(
                 () => StreamBuilder<QuerySnapshot>(
@@ -164,13 +188,89 @@ class ChatRoom extends StatelessWidget {
                                     ),
                                   ),
                                   child: InkWell(
-                                    onTap: () async {
-                                      var future = await FirebaseFirestore
-                                          .instance
-                                          .collection("chat")
-                                          .doc(controller.chatRoomId.value)
-                                          .collection("messages")
-                                          .get();
+                                    onLongPress: () {
+                                      controller.isDelete.value = true;
+
+                                      showModalBottomSheet(
+                                        context: Get.context!,
+                                        builder: (context) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(40)),
+                                            height: MediaQuery.sizeOf(context)
+                                                    .height /
+                                                5,
+                                            width: MediaQuery.sizeOf(context)
+                                                .width,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    CircleAvatar(
+                                                        radius: 30,
+                                                        backgroundColor: Colors
+                                                            .lightGreen
+                                                            .shade100,
+                                                        child: IconButton(
+                                                            onPressed: () {},
+                                                            icon: Icon(
+                                                                Icons.copy))),
+                                                    Text("Copy"),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width:
+                                                      MediaQuery.sizeOf(context)
+                                                              .width /
+                                                          8,
+                                                ),
+                                                Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    CircleAvatar(
+                                                      radius: 30,
+                                                      backgroundColor: Colors
+                                                          .lightGreen.shade100,
+                                                      child: IconButton(
+                                                          onPressed: () async {
+                                                            await FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    "chats")
+                                                                .doc(controller
+                                                                    .chatRoomId
+                                                                    .value)
+                                                                .collection(
+                                                                    "messages")
+                                                                .doc(
+                                                                    "${message["time"]}")
+                                                                .delete()
+                                                                .then((value) =>
+                                                                    {
+                                                                      print(
+                                                                          "deleted")
+                                                                    });
+                                                          },
+                                                          icon: Icon(Icons
+                                                              .delete_outline_outlined)),
+                                                    ),
+                                                    Text("Delete"),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    onTap: () {
+                                      controller.isDelete.value = false;
                                     },
                                     child: ("${message["image"]}".isEmpty)
                                         ? Text(
@@ -180,6 +280,9 @@ class ChatRoom extends StatelessWidget {
                                                 fontSize: 14),
                                           )
                                         : InkWell(
+                                            onLongPress: () {
+                                              controller.isDelete.value = true;
+                                            },
                                             onTap: () {
                                               Get.to(() => PhotoBar(),
                                                   arguments: message);
@@ -191,7 +294,8 @@ class ChatRoom extends StatelessWidget {
                                                     BorderRadius.circular(8),
                                               ),
                                               child: Image.file(
-                                                File("${message["image"]}"),
+                                                File(
+                                                    "${message["image"][index]}"),
                                                 height:
                                                     MediaQuery.sizeOf(context)
                                                             .height /
@@ -226,98 +330,103 @@ class ChatRoom extends StatelessWidget {
                     }),
               ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  child: SizedBox(
-                    width: MediaQuery.sizeOf(context).width / 1.2,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.emoji_emotions_outlined)),
-                        Expanded(
-                          child: TextFormField(
-                            onTap: () {},
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            controller: chatMessage,
-                            onEditingComplete: () {
-                              if (chatMessage.text.isNotEmpty) {
+            Positioned(
+              bottom: 0,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    child: SizedBox(
+                      width: MediaQuery.sizeOf(context).width / 1.2,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                print(MediaQuery.sizeOf(context).height);
+                                print(MediaQuery.sizeOf(context).width);
+                              },
+                              icon: Icon(Icons.emoji_emotions_outlined)),
+                          Expanded(
+                            child: TextFormField(
+                              onTap: () {},
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null,
+                              controller: chatMessage,
+                              onEditingComplete: () {
+                                if (chatMessage.text.isNotEmpty) {
+                                  controller.userChat(
+                                      controller.email ?? "",
+                                      controller.id ?? "",
+                                      chatMessage.text,
+                                      DateTime.now().toString(),
+                                      false);
+                                }
+                              },
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Type a message",
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Content();
+                                },
+                              );
+                            },
+                            icon: Icon(Icons.attach_file),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              if (controller.filepath.value.isEmpty) {
+                                await controller.pickImage(true);
                                 controller.userChat(
                                     controller.email ?? "",
                                     controller.id ?? "",
                                     chatMessage.text,
                                     DateTime.now().toString(),
                                     false,
-                                    "");
+                                    controller.filepath.value);
+                                // await  Get.to(()=>ChatRoom());
                               }
                             },
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Type a message",
-                            ),
+                            icon: Icon(Icons.camera_alt_outlined),
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) {
-                                return Content();
-                              },
-                            );
-                          },
-                          icon: Icon(Icons.attach_file),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            if (controller.filepath.value.isEmpty) {
-                              await controller.pickImage(true);
-                              controller.userChat(
-                                  controller.email ?? "",
-                                  controller.id ?? "",
-                                  chatMessage.text,
-                                  DateTime.now().toString(),
-                                  false,
-                                  controller.filepath.value);
-                              // await  Get.to(()=>ChatRoom());
-                            }
-                          },
-                          icon: Icon(Icons.camera_alt_outlined),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                CircleAvatar(
-                  radius: 23,
-                  backgroundColor: Colors.green,
-                  child: IconButton(
-                      onPressed: () async {
-                        if (chatMessage.text.isNotEmpty) {
-                          controller.userChat(
-                              controller.email ?? "",
-                              controller.id ?? "",
-                              chatMessage.text,
-                              DateTime.now().toString(),
-                              false,
-                              "");
-                        }
-                        print("halo hu call thavu hu");
+                  CircleAvatar(
+                    radius: 23,
+                    backgroundColor: Colors.green,
+                    child: IconButton(
+                        onPressed: () async {
+                          if (chatMessage.text.isNotEmpty) {
+                            controller.userChat(
+                                controller.email ?? "",
+                                controller.id ?? "",
+                                chatMessage.text,
+                                DateTime.now().toString(),
+                                false,
+                                "");
+                          }
+                          print("halo hu call thavu hu");
 
-                        chatMessage.clear();
-                      },
-                      icon: Icon(
-                        (Icons.send_rounded),
-                        color: Colors.white,
-                      )),
-                ),
-              ],
+                          chatMessage.clear();
+                        },
+                        icon: Icon(
+                          (Icons.send_rounded),
+                          color: Colors.white,
+                        )),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

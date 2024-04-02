@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/controller/profileController.dart';
+import 'package:dating_app/view/home/docs/media.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,6 +36,12 @@ class Profile extends StatelessWidget {
                         arguments: {"photo": controller.photo});
                   },
                 ),
+                PopupMenuItem(
+                  child: Text("Media"),
+                  onTap: () {
+                    Get.to(() => Profile());
+                  },
+                ),
                 PopupMenuItem(child: Text("Share")),
               ];
             },
@@ -45,7 +52,7 @@ class Profile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CircleAvatar(
-            radius: 60,
+            radius: 60,backgroundColor: Colors.green,
             child: Container(
               height: MediaQuery.sizeOf(context).height / 3.1,
               width: MediaQuery.sizeOf(context).width / 3.3,
@@ -71,7 +78,7 @@ class Profile extends StatelessWidget {
             ),
           ),
           Text(
-            controller.lastMsg ?? "",
+            controller.lastMessage ?? "",
             style: TextStyle(
                 fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize),
           ),
@@ -172,11 +179,52 @@ class Profile extends StatelessWidget {
                   children: [
                     Text("Media Shared"),
                     SizedBox(
-                      width: MediaQuery.sizeOf(context).width/2.2,
+                      width: MediaQuery.sizeOf(context).width / 2.2,
                     ),
-                    TextButton(onPressed: () {}, child: Text("View All"))
+                    TextButton(
+                        onPressed: () {
+                          Get.to(() => Media(), arguments: [
+                            controller.document,
+                            controller.name ?? ""
+                          ]);
+                        },
+                        child: Text("View All"))
                   ],
                 ),
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("chats")
+                      .doc(controller.chatRoomId)
+                      .collection("messages")
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    List<QueryDocumentSnapshot> data =
+                        snapshot.data?.docs ?? [];
+                    return SizedBox(
+                      height: MediaQuery.sizeOf(context).height / 5.6,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          var Data = data[index];
+                          var imageData = Data.data() as Map<String, dynamic>?;
+                          print(data.length);
+                          controller.document = data;
+                          return Container(
+                            height: MediaQuery.sizeOf(context).height / 7,
+                            width: MediaQuery.sizeOf(context).width / 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: ("${imageData?["image"]}".isNotEmpty)
+                                ? Image.file(File(imageData?["image"]))
+                                : null,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                )
               ],
             ),
           )

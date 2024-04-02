@@ -55,10 +55,11 @@ class Message extends StatelessWidget {
                   ),
                 ),
         ),
+        centerTitle: true,
         actions: [
           IconButton(
             onPressed: () {
-             pickImage(true);
+              pickImage(true);
             },
             icon: Icon(
               Icons.camera_alt_outlined,
@@ -103,7 +104,8 @@ class Message extends StatelessWidget {
                         itemBuilder: (context, index) {
                           var Data = data[index];
                           var userData = Data.data() as Map<String, dynamic>?;
-                          bool isLogUser = user?.uid == Data.id;
+                          bool isLogUser =
+                              Data.id == controller.receiverId.value;
                           print("object  ${Data.id}");
                           return Stack(
                             children: [
@@ -125,10 +127,12 @@ class Message extends StatelessWidget {
                                         color: Colors.green,
                                         borderRadius:
                                             BorderRadius.circular(100)),
-                                    child: ("${userData?["image"]}")
-                                            .startsWith("https://")
+                                    child: userData != null &&
+                                            userData["image"] != null &&
+                                            (("${userData["image"]}")
+                                                .startsWith("https://"))
                                         ? Image.network(
-                                            ("${userData?["image"]}"),
+                                            ("${userData["image"]}"),
                                             fit: BoxFit.cover,
                                           )
                                         : Image.memory(
@@ -191,9 +195,11 @@ class Message extends StatelessWidget {
                   stream: FirebaseFirestore.instance
                       .collection("chats")
                       .where("receiverMail", isNotEqualTo: user?.email)
-                      // .where("senderMail", isNotEqualTo: user?.email)
-                      // .orderBy("time",descending: false)
+                      // .where("senderMail",
+                      //     isEqualTo: controller.receiverId.value)
+                      // .orderBy("lastTime", descending: false)
                       .snapshots(),
+
                   builder: (context, snapshot) {
                     controller.foundData.assignAll(snapshot.data?.docs ?? []);
 
@@ -218,7 +224,6 @@ class Message extends StatelessWidget {
                               DateTime currentTime = now.toDate();
                               var userTime =
                                   DateFormat("hh:mm a").format(currentTime);
-
                               return Card(
                                 elevation: 0,
                                 child: StreamBuilder<DocumentSnapshot>(
@@ -389,10 +394,13 @@ class Message extends StatelessWidget {
                                                                 "${userDetails?["image"]}"),
                                                             fit: BoxFit.cover)),
                                               )),
-                                          title:
-                                              Text("${userDetails?["name"]}"),
+                                          title: Text(((user?.uid ==
+                                                  controller.receiverId.value))
+                                              ? "${userDetails?["name"]}"
+                                              : "${userDetails?["name"]}"),
                                           subtitle: Text("${item["message"]}",
-                                              overflow: TextOverflow.ellipsis),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1),
                                           trailing: Text(userTime),
                                         ),
                                       );
@@ -409,7 +417,7 @@ class Message extends StatelessWidget {
           ),
         ),
       ),
-      endDrawer: DrawerApp(),
+      drawer: DrawerApp(),
     );
   }
 }

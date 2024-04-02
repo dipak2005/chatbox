@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/controller/drawer_controller.dart';
 import 'package:dating_app/model/adduser_model.dart';
+import 'package:dating_app/model/login&signp.dart';
 import 'package:dating_app/view/home/docs/photobar.dart';
 import 'package:dating_app/view/login/login.dart';
 import 'package:dating_app/view/login/login1.dart';
@@ -139,19 +140,13 @@ class DrawerApp extends StatelessWidget {
             await FirebaseAuth.instance.signOut();
             await GoogleSignIn().signOut();
             Get.to(() => Login());
+            filepath.value="";
           },
           title: Text(
             "Logout",
             style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700),
           ),
         ),
-        IconButton(
-            onPressed: () async {
-              // FirebaseFirestore.instance
-              //     .collection("chats")
-              //     .doc(FirebaseAuth.instance.currentUser?.uid ?? "").update(map["image"]);
-            },
-            icon: Icon(Icons.add)),
       ],
     );
   }
