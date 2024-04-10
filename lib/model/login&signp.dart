@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:dating_app/model/adduser_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +12,7 @@ TextEditingController search = TextEditingController();
 
 RxString filepath = "".obs;
 RxBool isRead = false.obs;
+String background = "";
 
 void pickImage(bool isCamara) async {
   XFile? file = await ImagePicker()

@@ -1,15 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:convert';
+
 import 'dart:io';
 
 import 'package:dating_app/controller/imagecontroller.dart';
-import 'package:dating_app/model/adduser_model.dart';
-import 'package:dating_app/view/home/home.dart';
 import 'package:dating_app/view/login/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../model/login&signp.dart';
 

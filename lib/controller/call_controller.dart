@@ -9,7 +9,7 @@ class CallController extends GetxController{
     FirebaseFirestore.instance
         .collection("user")
         .get()
-        .then((value) => {print("data inserted")});
+        .then((value) => {});
     super.onInit();
   }
 

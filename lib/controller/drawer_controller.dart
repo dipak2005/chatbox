@@ -9,7 +9,7 @@ class DrawersController extends GetxController{
   void onInit() {
     super.onInit();
     FirebaseFirestore.instance.collection("user").get().then((value) => {
-      print("data inserted")
+
     });
   }
 }

@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/model/adduser_model.dart';
 import 'package:dating_app/model/login&signp.dart';
-import 'package:dating_app/model/userchat_model.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:intl/intl.dart';
 
 class AddUserModel {

@@ -4,12 +4,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dating_app/model/userchat_model.dart';
 import 'package:dating_app/view/home/docs/content.dart';
 import 'package:dating_app/view/home/docs/photobar.dart';
-import 'package:dating_app/view/home/pages/message.dart';
+
 import 'package:dating_app/view/home/profile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,7 +16,6 @@ import 'package:dating_app/controller/chat_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../main.dart';
 import '../../../model/login&signp.dart';
 
 class ChatRoom extends StatelessWidget {
@@ -36,9 +34,12 @@ class ChatRoom extends StatelessWidget {
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
           child: CircleAvatar(
             child: ((controller.photo ?? "").startsWith("https://")
-                ? Image.network(
-                    (controller.photo ?? ""),
-                    fit: BoxFit.cover,
+                ? Hero(
+                    tag: "index",
+                    child: Image.network(
+                      (controller.photo ?? ""),
+                      fit: BoxFit.cover,
+                    ),
                   )
                 : Image.memory(base64Decode(controller.photo ?? ""),
                     fit: BoxFit.cover)),
@@ -64,11 +65,11 @@ class ChatRoom extends StatelessWidget {
                       maxLines: 1),
                   subtitle: (status?["status"] == true)
                       ? Text(
-                          (chatMessage.text.isEmpty) ? "Active now" : "typing",
+                          (controller.isClear.value) ? "online" : "typing...",
                           style: TextStyle(fontSize: 10),
                         )
                       : Text(
-                          "Last seen at ${status?["lastTime"]}",
+                          "Last seen at today at  ${DateFormat("hh:mm a").format(DateTime.now())}",
                           style: TextStyle(fontSize: 10),
                         ),
                 ),
@@ -119,10 +120,11 @@ class ChatRoom extends StatelessWidget {
                 height: MediaQuery.sizeOf(context).height,
                 width: MediaQuery.sizeOf(context).width,
                 child: Image.asset(
-                  "assets/image6.jpg",
+                  (background.isEmpty) ? "assets/image6.jpg" : background,
                   fit: BoxFit.fitHeight,
                 )),
-            Expanded(
+            SizedBox(
+              height: MediaQuery.sizeOf(context).height / 1.2,
               child: Obx(
                 () => StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
@@ -162,7 +164,7 @@ class ChatRoom extends StatelessWidget {
                               children: [
                                 // Text(controller.messageDateTile("${message["time"]}" as DateTime)),
                                 //  (index==0 || (index>0 && !controller.isSameDate("${message["time"]}" as DateTime, "${message["time"]}" as DateTime)))?
-
+                                // Text( controller.formatDate(message["time"])),
                                 Container(
                                   padding: EdgeInsets.all(
                                       MediaQuery.sizeOf(context).width * 0.03),
@@ -187,145 +189,147 @@ class ChatRoom extends StatelessWidget {
                                       bottomLeft: Radius.circular(15),
                                     ),
                                   ),
-                                  child: InkWell(
-                                    onLongPress: () {
-                                      controller.isDelete.value = true;
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        onLongPress: () {
+                                          controller.isDelete.value = true;
 
-                                      showModalBottomSheet(
-                                        context: Get.context!,
-                                        builder: (context) {
-                                          return Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(40)),
-                                            height: MediaQuery.sizeOf(context)
-                                                    .height /
-                                                5,
-                                            width: MediaQuery.sizeOf(context)
-                                                .width,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    CircleAvatar(
-                                                        radius: 30,
-                                                        backgroundColor: Colors
-                                                            .lightGreen
-                                                            .shade100,
-                                                        child: IconButton(
-                                                            onPressed: () {},
-                                                            icon: Icon(
-                                                                Icons.copy))),
-                                                    Text("Copy"),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  width:
-                                                      MediaQuery.sizeOf(context)
-                                                              .width /
-                                                          8,
-                                                ),
-                                                Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    CircleAvatar(
-                                                      radius: 30,
-                                                      backgroundColor: Colors
-                                                          .lightGreen.shade100,
-                                                      child: IconButton(
-                                                          onPressed: () async {
-                                                            await FirebaseFirestore
-                                                                .instance
-                                                                .collection(
-                                                                    "chats")
-                                                                .doc(controller
-                                                                    .chatRoomId
-                                                                    .value)
-                                                                .collection(
-                                                                    "messages")
-                                                                .doc(
-                                                                    "${message["time"]}")
-                                                                .delete()
-                                                                .then((value) =>
-                                                                    {
-                                                                      print(
-                                                                          "deleted")
-                                                                    });
-                                                          },
-                                                          icon: Icon(Icons
-                                                              .delete_outline_outlined)),
-                                                    ),
-                                                    Text("Delete"),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    onTap: () {
-                                      controller.isDelete.value = false;
-                                    },
-                                    child: ("${message["image"]}".isEmpty)
-                                        ? Text(
-                                            message["message"],
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 14),
-                                          )
-                                        : InkWell(
-                                            onLongPress: () {
-                                              controller.isDelete.value = true;
-                                            },
-                                            onTap: () {
-                                              Get.to(() => PhotoBar(),
-                                                  arguments: message);
-                                            },
-                                            child: Container(
-                                              clipBehavior: Clip.antiAlias,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: Image.file(
-                                                File(
-                                                    "${message["image"][index]}"),
+                                          showModalBottomSheet(
+                                            context: Get.context!,
+                                            builder: (context) {
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            40)),
                                                 height:
                                                     MediaQuery.sizeOf(context)
                                                             .height /
-                                                        3,
+                                                        5,
                                                 width:
                                                     MediaQuery.sizeOf(context)
+                                                        .width,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        CircleAvatar(
+                                                            radius: 30,
+                                                            backgroundColor:
+                                                                Colors
+                                                                    .lightGreen
+                                                                    .shade100,
+                                                            child: IconButton(
+                                                                onPressed:
+                                                                    () {},
+                                                                icon: Icon(Icons
+                                                                    .copy))),
+                                                        Text("Copy"),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      width: MediaQuery.sizeOf(
+                                                                  context)
+                                                              .width /
+                                                          8,
+                                                    ),
+                                                    Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        CircleAvatar(
+                                                          radius: 30,
+                                                          backgroundColor:
+                                                              Colors.lightGreen
+                                                                  .shade100,
+                                                          child: IconButton(
+                                                              onPressed: () {
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "chats")
+                                                                    .doc(controller
+                                                                        .chatRoomId
+                                                                        .value)
+                                                                    .collection(
+                                                                        "messages")
+                                                                    .doc(DateTime
+                                                                            .now()
+                                                                        .toString())
+                                                                    .delete();
+                                                              },
+                                                              icon: Icon(Icons
+                                                                  .delete_outline_outlined)),
+                                                        ),
+                                                        Text("Delete"),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        onTap: () {
+                                          controller.isDelete.value = false;
+                                        },
+                                        child: ("${message["image"]}".isEmpty)
+                                            ? Text(
+                                                message["message"],
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14),
+                                              )
+                                            : InkWell(
+                                                onTap: () {
+                                                  Get.to(() => PhotoBar(),
+                                                      arguments: message);
+                                                },
+                                                child: Container(
+                                                  clipBehavior: Clip.antiAlias,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  child: Image.file(
+                                                    File("${message["image"]}"),
+                                                    height: MediaQuery.sizeOf(
+                                                                context)
+                                                            .height /
+                                                        3,
+                                                    width: MediaQuery.sizeOf(
+                                                                context)
                                                             .width /
                                                         1.7,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
+                                      ),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(userTime, style: TextStyle(fontSize: 8)),
+                                          Icon(
+                                            Icons.done_all,
+                                            color: (isRead.value == true)
+                                                ? Colors.blue
+                                                : Colors.white,
+                                            size: 13,
+                                          )
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 // :SizedBox.shrink()
-
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(userTime,
-                                        style: TextStyle(
-                                            fontSize: 10, color: Colors.white)),
-                                    Icon(
-                                      Icons.done_all,
-                                      color: (isRead.value == true)
-                                          ? Colors.blue
-                                          : Colors.white,
-                                      size: 19,
-                                    )
-                                  ],
-                                ),
                               ],
                             ),
                           );
@@ -366,7 +370,8 @@ class ChatRoom extends StatelessWidget {
                                       controller.id ?? "",
                                       chatMessage.text,
                                       DateTime.now().toString(),
-                                      false);
+                                      false,
+                                      "");
                                 }
                               },
                               decoration: InputDecoration(
@@ -419,6 +424,7 @@ class ChatRoom extends StatelessWidget {
                                 DateTime.now().toString(),
                                 false,
                                 "");
+                            controller.isClear.value=true;
                           }
                           print("halo hu call thavu hu");
 
@@ -435,17 +441,6 @@ class ChatRoom extends StatelessWidget {
           ],
         ),
       ),
-      // floatingActionButton: Padding(
-      //   padding: const EdgeInsets.only(bottom: 48.0),
-      //   child: FloatingActionButton(
-      //     backgroundColor: Colors.white,
-      //     onPressed: () {
-      //       var index = 0;
-      //       if (index == 0) {}
-      //     },
-      //     child: Icon(Icons.arrow_downward),
-      //   ),
-      // ),
     );
   }
 }
@@ -460,22 +455,11 @@ class DateBadge extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       color: Colors.grey[300],
-      child: Text(
-        _formatDate(date),
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
+      // child: Text(
+      // _formatDate(date),
+      // style: TextStyle(fontWeight: FontWeight.bold),
+      // ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    // Format the date as needed
-    if (DateTime.now().difference(date).inDays == 0) {
-      return 'Today';
-    } else if (DateTime.now().difference(date).inDays == 1) {
-      return 'Yesterday';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
   }
 }
 

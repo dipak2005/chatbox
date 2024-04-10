@@ -5,9 +5,8 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/controller/settingscontroller.dart';
 import 'package:dating_app/model/setting_detail_util.dart';
-import 'package:dating_app/model/settinglist_model.dart';
 import 'package:dating_app/view/home/home.dart';
-import 'package:dating_app/view/home/pages/message.dart';
+
 import 'package:dating_app/view/home/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,20 +23,7 @@ class Settings extends StatelessWidget {
     var user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            radius: 20,
-            child: IconButton(
-              onPressed: () {
-                Get.to(() => Home());
-              },
-              icon: Icon(
-                Icons.arrow_back_ios,
-              ),
-            ),
-          ),
-        ),
+
         title: Text("Settings"),
         centerTitle: true,
       ),
@@ -117,7 +103,6 @@ class Settings extends StatelessWidget {
                       itemCount: settingList.length,
                       itemBuilder: (context, index) {
                         var data = settingList[index];
-                        // SettingListModel.fromMap(map)
                         IconData icon = data["icon"];
                         return Card(
                           elevation: 0,
@@ -148,25 +133,7 @@ class Settings extends StatelessWidget {
                       },
                     ),
                   ),
-                  Obx(
-                    () => ListTile(
-                      leading: Icon(Icons.dark_mode,
-                          color: Theme.of(context).primaryColorDark),
-                      title: Text(
-                        "DarkMode",
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      trailing: SizedBox(
-                        width: 120,
-                        child: CupertinoSwitch(
-                          value: controller.isDark.value,
-                          onChanged: (value) {
-                            controller.changeTheme(value);
-                          },
-                        ),
-                      ),
-                    ),
-                  )
+
                 ],
               ),
             ),

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dating_app/controller/photocontroller.dart';
+import 'package:dating_app/model/login&signp.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -34,15 +35,48 @@ class PhotoBar extends StatelessWidget {
             // clipBehavior: Clip.antiAlias,
             // decoration:
             //     BoxDecoration(borderRadius: BorderRadius.circular(180)),
-            child: (controller.photo ?? "").startsWith("https://")
+            child: Stack(
+          children: [
+            (controller.photo ?? "").startsWith("https://")
                 ? Image.network(
                     controller.photo ?? "",
                     fit: BoxFit.fitWidth,
                     width: MediaQuery.sizeOf(context).width,
                   )
                 : ((controller.photo ?? "").startsWith("/data/"))
-                    ? Image.file(File(controller.photo ?? ""),fit: BoxFit.cover,)
-                    : Image.memory(base64Decode(controller.photo ?? ""),fit: BoxFit.cover,width: MediaQuery.sizeOf(context).width,)),
+                    ? Image.file(
+                        File(controller.photo ?? ""),
+                        fit: BoxFit.cover,
+                      )
+                    : (controller.photo ?? "").startsWith("assets/")
+                        ? Image.asset(
+                            controller.photo ?? "",
+                            fit: BoxFit.fitHeight,
+                            height: MediaQuery.sizeOf(context).height,
+                          )
+                        : Image.memory(
+                            base64Decode(controller.photo ?? ""),
+                            fit: BoxFit.cover,
+                            width: MediaQuery.sizeOf(context).width,
+                          ),
+            (controller.photo ?? "").startsWith("assets/")? Positioned(
+              bottom: 10,
+              right: 100,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(
+                    Color(0xff023404),
+                  ),
+                ),
+                onPressed: () {
+                  background=controller.photo??"";
+
+                },
+                child: Text("Set Wallpaper",style: TextStyle(color: Colors.white)),
+              ),
+            ):SizedBox.shrink()
+          ],
+        )),
       ),
     );
   }

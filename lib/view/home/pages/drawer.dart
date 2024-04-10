@@ -1,16 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/controller/drawer_controller.dart';
-import 'package:dating_app/model/adduser_model.dart';
+
 import 'package:dating_app/model/login&signp.dart';
 import 'package:dating_app/view/home/docs/photobar.dart';
 import 'package:dating_app/view/login/login.dart';
-import 'package:dating_app/view/login/login1.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -64,7 +63,7 @@ class DrawerApp extends StatelessWidget {
                                 content: InkWell(
                                   onTap: () {
                                     Get.to(() => PhotoBar(), arguments: {
-                                      "photo": data?["image"],
+                                      "photo": data?["image"]??"",
                                       "name": data?["name"],
                                     });
                                   },
@@ -115,12 +114,7 @@ class DrawerApp extends StatelessWidget {
                                   fit: BoxFit.cover)),
                     ),
                   ),
-                  otherAccountsPictures: [
-                    // CircleAvatar(
-                    //   backgroundImage: (user?.photoURL==null)?MemoryImage(base64Decode(img)):Image(image: ),
-                    // child: (user?.photoURL==null)?Image.memory(base64Decode(img)):Image.network(img),
-                    // ),
-                  ],
+
                   decoration: BoxDecoration(color: Colors.green.shade600),
                   accountName: Text(
                     "${data?["name"] ?? ""}",

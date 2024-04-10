@@ -3,7 +3,6 @@
 import 'package:dating_app/controller/chat_controller.dart';
 import 'package:dating_app/controller/content_controller.dart';
 import 'package:dating_app/model/login&signp.dart';
-import 'package:dating_app/view/home/docs/image_sender.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -2,9 +2,8 @@
 
 import 'dart:typed_data';
 
-import 'package:dating_app/model/userchat_model.dart';
+
 import 'package:dating_app/view/home/add_info.dart';
-import 'package:dating_app/view/home/docs/account.dart';
 import 'package:dating_app/view/home/docs/chat_settings.dart';
 import 'package:dating_app/view/home/docs/help.dart';
 import 'package:dating_app/view/home/docs/image_sender.dart';
@@ -12,6 +11,7 @@ import 'package:dating_app/view/home/docs/media.dart';
 import 'package:dating_app/view/home/docs/notifications.dart';
 import 'package:dating_app/view/home/docs/post_maker.dart';
 import 'package:dating_app/view/home/docs/post_viewer.dart';
+import 'package:dating_app/view/home/docs/wallpaper.dart';
 
 
 
@@ -124,7 +124,6 @@ class MyApp extends StatelessWidget {
         "add_info": (p0) => AddInfo(),
         "contacts": (p0) => Contacts(),
         "chat": (p0) => ChatRoom(),
-        "account":(p0) => Account(),
         "chat_settings":(p0) => ChatSettings(),
         "notify":(p0) => Notifications(),
         "help":(p0) => Help(),
@@ -132,6 +131,7 @@ class MyApp extends StatelessWidget {
         "postViewer":(p0) => PostMaker(),
         "imageSender":(p0) => ImageSender(),
         "media":(p0) => Media(),
+        "wall":(p0) => WallPaper(),
       },
     );
   }

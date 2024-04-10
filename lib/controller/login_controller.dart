@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_print
 
-import 'package:dating_app/main.dart';
+
 import 'package:dating_app/model/singleton_class/addUser_class.dart';
 import 'package:dating_app/view/home/home.dart';
 import 'package:dating_app/view/login/forgetpassword.dart';
@@ -8,7 +8,7 @@ import 'package:dating_app/view/login/login1.dart';
 import 'package:dating_app/view/login/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 

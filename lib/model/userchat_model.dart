@@ -3,7 +3,6 @@
 //     final userChat = userChatFromJson(jsonString);
 
 import 'dart:convert';
-import 'dart:ui';
 
 UserChat userChatFromJson(String str) => UserChat.fromJson(json.decode(str));
 

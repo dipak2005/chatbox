@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Calls extends StatelessWidget {
   const Calls({super.key});
@@ -71,7 +70,8 @@ class Calls extends StatelessWidget {
                       .snapshots(),
                   builder: (context, snapshot) {
                     var data = snapshot.data?.docs ?? [];
-                    return ListView.builder(
+                    if(snapshot.hasData) {
+                      return ListView.builder(
                       itemCount: data.length,
                       itemBuilder: (context, index) {
                         var item = data[index];
@@ -122,6 +122,9 @@ class Calls extends StatelessWidget {
                         );
                       },
                     );
+                    }else{
+                      return Center(child: CircularProgressIndicator(),);
+                    }
                   },
                 ),
               ),

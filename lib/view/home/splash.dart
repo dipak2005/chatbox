@@ -21,10 +21,6 @@ class Splash extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Text(
-            " !!Unboxing Your Date !! ",
-            style: TextStyle(color: Colors.green),
-          )
         ],
       ),
     );

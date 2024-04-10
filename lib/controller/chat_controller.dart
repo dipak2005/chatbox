@@ -22,6 +22,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   RxString username = "".obs;
   String? photo;
   String? lastMsg;
+ RxBool isClear=false.obs;
   RxBool status = false.obs;
   DateTime? time;
   RxBool isSend = false.obs;
@@ -50,6 +51,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       phone = args["phone"];
       lastMsg = args["lastMsg"];
       username.value = args["name"];
+      // index=args["index"];
     }
 
     senderId = FirebaseAuth.instance.currentUser?.uid ?? "";
@@ -86,9 +88,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .update({"status": state == AppLifecycleState.resumed});
     super.didChangeAppLifecycleState(state);
-    print("state  $state");
+
     updateStatus(state);
-    // state=status;
   }
 
   String messageDateTile(DateTime dateTime) {
@@ -130,7 +131,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   void userChat(String receiverMail, String receiverId, String message,
       String time, bool isRead,
-      [image]) async {
+      [image,receiverName]) async {
     var uChat = await FirebaseFirestore.instance
         .collection("chats")
         .doc("$senderId-$receiverId")
@@ -146,7 +147,6 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         .doc(receiverId)
         .get();
     var receiverToken = receiverData.data()?["fcmToken"];
-    var receiverName = receiverData.data()?["name"];
 
     sendFcmNotification(receiverToken, user?.displayName ?? "", message, image);
 
@@ -165,7 +165,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   * */
 
     uChat.reference.set({
-      // "status":status,
+      "status": status.value,
       "message": message,
       "senderId": senderId,
       "receiverId": receiverId,
@@ -173,19 +173,23 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       "receiverMail": receiverMail,
       "time": DateTime.now(),
       "isRead": false,
-      "image": image
+      "image": image,
+      "email":user?.email,
+      "name":user?.displayName??""
     });
 
     rChat.reference.set({
-      "status": status,
+      "status": status.value,
       "message": message,
       "senderId": senderId,
       "receiverId": receiverId,
       "senderMail": user?.email ?? "",
-      "receiverMail": email,
+      "receiverMail": receiverMail,
       "time": DateTime.now(),
       "isRead": false,
-      "image": image
+      "image": image,
+      "email":receiverMail,
+      "name":receiverName
     });
 
     uChat.reference.collection("messages").doc("${DateTime.now()}").set(
@@ -211,6 +215,17 @@ class ChatController extends GetxController with WidgetsBindingObserver {
                   image: filepath.value)
               .toJson(),
         );
+  }
+
+  String formatDate(DateTime date) {
+    // Format the date as needed
+    if (time?.difference(date).inDays == 0) {
+      return 'Today';
+    } else if (time?.difference(date).inDays == 1) {
+      return 'Yesterday';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
   }
 
   bool isSameDate(DateTime date1, DateTime date2) {
@@ -262,42 +277,4 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         maxWidth: MediaQuery.sizeOf(Get.context!).width, imageQuality: 100);
     multiList.value = file;
   }
-
-  void showSheet(String MessageDate) {
-
-  }
-// var now=DateTime.now();
-//   var perfectTime=DateFormat("HH:mm a");
-
-// void userChat( String receiverMail, String receiverId,
-//     String message, String time ) async {
-//   var srChat = await FirebaseFirestore.instance
-//       .collection("chats")
-//       .doc("$senderId-$receiverId")
-//       .get();
-//
-//   if (!srChat.exists) {
-//     var srChat = await FirebaseFirestore.instance
-//         .collection("chats")
-//         .doc("$receiverId-$senderId")
-//         .get();
-//   }
-//
-//   srChat.reference.set({
-//     time: messageTime.format(now),
-//     "message": message,
-//     "senderId": senderId,
-//     "receiverId": receiverId,
-//     "senderMail": user?.email ?? "",
-//     "receiverMail": receiverMail,
-//   });
-//
-//   srChat.reference.collection("messages").doc(messageTime.format(now)).set(
-//     UserChat(
-//       time: messageTime.format(now),
-//       message: message,
-//       senderId: senderId,
-//       senderMail: user?.email??"",
-//     ).toJson(),
-//   );
 }
