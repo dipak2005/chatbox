@@ -1,6 +1,6 @@
 # Chat Box (Connect virtually but feel closely) 😊
 # Project Requirements : 
-- Dart Language
+- This project is builting with Dart Language
 - Flutter framework with Mvc and getx state management architecture.
 - in this project we used Firebase which is non relational database for online bacakend service provider.
 - for messanging we used firebase cloud messanging to enable the chat one to one and privately.
@@ -21,6 +21,6 @@
 # Screen Shorts (ss) : 
 - Light Theme :
 ![IMG-20240812-WA0010 (1)](https://github.com/user-attachments/assets/458660b6-2874-426b-840a-833e7d4078d3)
-_ Dark Theme  :
+- Dark Theme  :
 ![IMG-20240812-WA0016 (1)](https://github.com/user-attachments/assets/02eeff47-c970-4721-9576-db05355ceacc)
 
